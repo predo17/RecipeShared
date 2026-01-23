@@ -37,7 +37,7 @@ Este projeto foi desenvolvido para aprimorar habilidades em:
 - [x] Setup do shadcn/ui
 
 ### Fase 2: CRUD Básico (Em Andamento)
-- [ ] Configurar o Supabase
+- [x] Configurar o Supabase 
 - [ ] Criar página de listagem de receitas
 - [ ] Criar página de detalhes
 - [ ] Implementar formulário de criação
