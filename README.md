@@ -36,12 +36,12 @@ Este projeto foi desenvolvido para aprimorar habilidades em:
 - [x] Configurar React Router
 - [x] Setup do shadcn/ui
 
-### Fase 2: CRUD Básico (Em Andamento)
+### Fase 2: CRUD Básico ✅
 - [x] Configurar o Supabase 
-- [ ] Criar página de listagem de receitas
-- [ ] Criar página de detalhes
-- [ ] Implementar formulário de criação
-- [ ] Sistema de roteamento
+- [ ] Criar página de listagem de receitas ⏳
+- [ ] Criar página de detalhes ⏳
+- [x] Implementar formulário de criação
+- [x] Sistema de roteamento
 
 ### Fase 3: Features Intermediárias
 - [ ] Sistema de busca
@@ -51,12 +51,12 @@ Este projeto foi desenvolvido para aprimorar habilidades em:
 - [ ] Comentários
 
 ### Fase 4: Features Avançadas
-- [ ] Autenticação de usuários
+- [x] Autenticação de usuários
 - [ ] Timer de preparo
 - [ ] Conversor de unidades
 - [ ] Lista de compras
 - [ ] Favoritos
-- [ ] Perfil de usuário
+- [x] Perfil de usuário
 
 ## 🎯 Funcionalidades Planejadas
 
