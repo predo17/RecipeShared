@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react"
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 import { supabase } from "@/lib/Supabase"
 import { getCurrentUser, type AuthUser } from "@/lib/authService"
 
@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Escutar mudanças na autenticação
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event) => {
       if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
         await loadUser()
       } else if (event === "SIGNED_OUT") {

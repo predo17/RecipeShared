@@ -1,5 +1,12 @@
 import { supabase } from "./Supabase"
-import type { User } from "./recipe"
+
+export type AuthUser = {
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  bio?: string;
+}
 
 // Registrar novo usuário
 export async function signUp(email: string, password: string, name: string) {
@@ -65,7 +72,7 @@ export async function signOut() {
 }
 
 // Obter usuário atual
-export async function getCurrentUser(): Promise<User | null> {
+export async function getCurrentUser(): Promise<AuthUser | null> {
   try {
     const {
       data: { user: authUser },

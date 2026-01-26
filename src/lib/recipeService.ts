@@ -30,7 +30,9 @@ export async function getAllRecipes(): Promise<Recipe[]> {
           rating,
           comment,
           created_at
-        )
+        ),
+        ingredients:ingredients(*),
+        steps:steps(*)
       `)
       .order("created_at", { ascending: false })
 
@@ -59,10 +61,12 @@ export async function getRecipeById(id: string): Promise<Recipe | null> {
           rating,
           comment,
           created_at
-        )
+        ),
+        ingredients:ingredients(*),
+        steps:steps(*)
       `)
       .eq("id", id)
-      .single()
+      .maybeSingle() // evita erro quando não existe
 
     if (error) throw error
     if (!data) return null
@@ -77,7 +81,7 @@ export async function getRecipeById(id: string): Promise<Recipe | null> {
 // Criar nova receita
 export async function createRecipe(recipeData: CreateRecipeData): Promise<Recipe> {
   try {
-    // Primeiro, criar a receita principal
+    // Criar a receita principal
     const { data: recipe, error: recipeError } = await supabase
       .from("recipes")
       .insert({
@@ -90,46 +94,55 @@ export async function createRecipe(recipeData: CreateRecipeData): Promise<Recipe
         category: recipeData.category,
         author_id: recipeData.authorId,
       })
-      .select()
+      .select() // retorna os campos da receita
       .single()
 
     if (recipeError) throw recipeError
     if (!recipe) throw new Error("Receita não foi criada")
 
-    // Criar ingredientes
-    if (recipeData.ingredients.length > 0) {
+    const recipeId = recipe.id
+
+    // Criar ingredientes (se houver)
+    if (recipeData.ingredients && recipeData.ingredients.length > 0) {
+      const ingredientsPayload = recipeData.ingredients.map((ing) => ({
+        recipe_id: recipeId,
+        name: ing.name,
+        quantity: ing.quantity,
+        unit: ing.unit,
+      }))
+
       const { error: ingredientsError } = await supabase
         .from("ingredients")
-        .insert(
-          recipeData.ingredients.map((ing) => ({
-            recipe_id: recipe.id,
-            name: ing.name,
-            quantity: ing.quantity,
-            unit: ing.unit,
-          }))
-        )
+        .insert(ingredientsPayload)
 
-      if (ingredientsError) throw ingredientsError
+      if (ingredientsError) {
+        // opcional: tentar limpar a receita criada ou informar erro
+        throw ingredientsError
+      }
     }
 
-    // Criar passos
-    if (recipeData.steps.length > 0) {
+    // Criar passos (se houver)
+    if (recipeData.steps && recipeData.steps.length > 0) {
+      const stepsPayload = recipeData.steps.map((step) => ({
+        recipe_id: recipeId,
+        // o schema usa a coluna "order"
+        order: step.order,
+        instruction: step.instruction,
+        time_minutes: step.timeMinutes ?? null,
+      }))
+
       const { error: stepsError } = await supabase
         .from("steps")
-        .insert(
-          recipeData.steps.map((step) => ({
-            recipe_id: recipe.id,
-            order: step.order,
-            instruction: step.instruction,
-            time_minutes: step.timeMinutes,
-          }))
-        )
+        .insert(stepsPayload)
 
-      if (stepsError) throw stepsError
+      if (stepsError) {
+        // opcional: tentar limpar a receita/ingredientes ou informar erro
+        throw stepsError
+      }
     }
 
-    // Buscar a receita completa criada
-    const fullRecipe = await getRecipeById(recipe.id)
+    // Recarregar a receita completa com relacionamentos
+    const fullRecipe = await getRecipeById(recipeId)
     if (!fullRecipe) throw new Error("Erro ao buscar receita criada")
 
     return fullRecipe
@@ -140,12 +153,12 @@ export async function createRecipe(recipeData: CreateRecipeData): Promise<Recipe
 }
 
 // Função auxiliar para transformar dados do Supabase para o formato Recipe
-function transformRecipe(data: unknown): Recipe {
+function transformRecipe(data: any): Recipe {
   // Calcular média de avaliações
-  const ratings = (data.ratings || []).map((r: unknown) => ({
+  const ratings = (data.ratings || []).map((r: any) => ({
     id: r.id,
     userId: r.user_id,
-    userName: r.user?.name || "Anônimo",
+    userName: r.user?.name,
     rating: r.rating,
     comment: r.comment || "",
     createdAt: r.created_at,
@@ -153,7 +166,7 @@ function transformRecipe(data: unknown): Recipe {
 
   const averageRating =
     ratings.length > 0
-      ? ratings.reduce((sum: number, r: unknown) => sum + r.rating, 0) / ratings.length
+      ? ratings.reduce((sum: number, r: any) => sum + r.rating, 0) / ratings.length
       : 0
 
   return {
@@ -168,15 +181,15 @@ function transformRecipe(data: unknown): Recipe {
     ingredients: (data.ingredients || []).map((ing: any) => ({
       id: ing.id,
       name: ing.name,
-      quantity: ing.quantity,
+      quantity: parseFloat(ing.quantity),
       unit: ing.unit,
     })),
     steps: (data.steps || [])
-      .map((step: unknown) => ({
+      .map((step: any) => ({
         id: step.id,
         order: step.order,
         instruction: step.instruction,
-        timeMinutes: step.time_minutes,
+        timeMinutes: step.time_minutes ?? undefined,
       }))
       .sort((a: Step, b: Step) => a.order - b.order),
     authorId: data.author_id || data.author?.id || "",

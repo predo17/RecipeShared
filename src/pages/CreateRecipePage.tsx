@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useAuth } from "@/contexts/AuthContext"
 
 interface IngredientForm {
   name: string
@@ -23,6 +24,7 @@ interface StepForm {
 
 export default function CreateRecipePage() {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -89,6 +91,7 @@ export default function CreateRecipePage() {
     setLoading(true)
 
     try {
+      if (!user) throw new Error("Você precisa estar logado para criar uma receita")
       // Validação básica
       if (!title.trim()) {
         throw new Error("O título é obrigatório")
@@ -125,7 +128,7 @@ export default function CreateRecipePage() {
           instruction: step.instruction.trim(),
           timeMinutes: step.timeMinutes ? parseInt(step.timeMinutes) : undefined,
         })),
-        authorId: "temp-user-id", // TODO: Substituir por ID do usuário autenticado
+        authorId: user.id, // TODO: Substituir por ID do usuário autenticado
       }
 
       const newRecipe = await createRecipe(recipeData)

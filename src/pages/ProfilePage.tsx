@@ -76,7 +76,7 @@ export default function ProfilePage() {
   if (!user) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex items-center justify-center min-h-100">
           <p className="text-muted-foreground">Carregando perfil...</p>
         </div>
       </div>
@@ -84,7 +84,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-3xl">
+    <div className="container mx-auto px-2 py-8 max-w-7xl">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Meu Perfil</h1>
         {!isEditing && (
@@ -100,7 +100,7 @@ export default function ProfilePage() {
         )}
       </div>
 
-      <div className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Informações do Perfil */}
         <Card>
           <CardHeader>
@@ -197,7 +197,7 @@ export default function ProfilePage() {
                   rows={4}
                 />
               ) : (
-                <div className="p-3 rounded-md border bg-muted/50 min-h-[60px]">
+                <div className="p-3 rounded-md border bg-muted/50 min-h-15">
                   <p className="text-sm">
                     {user.bio || "Nenhuma biografia adicionada ainda."}
                   </p>

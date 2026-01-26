@@ -1,3 +1,5 @@
+import type { AuthUser } from "@/lib/authService"
+
 export interface Recipe {
   id: string;
   title: string;
@@ -10,7 +12,7 @@ export interface Recipe {
   ingredients: Ingredient[];
   steps: Step[];
   authorId: string;
-  author: User;
+  author: AuthUser;
   ratings: Rating[];
   averageRating: number;
   createdAt: string;
@@ -38,12 +40,4 @@ export interface Rating {
   rating: number; // 1-5
   comment: string;
   createdAt: string;
-}
-
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-  bio?: string;
 }
