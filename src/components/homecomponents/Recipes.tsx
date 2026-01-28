@@ -61,9 +61,6 @@ export default function Recipes() {
             Descubra receitas deliciosas da nossa comunidade
           </p>
         </div>
-        <Link to="/recipes/new">
-          <Button>Nova Receita</Button>
-        </Link>
       </div>
 
 
