@@ -29,7 +29,7 @@ export default function SearchHome() {
 
                 <form className="space-y-4">
                     <div>
-                        <h2 className="inter text-2xl font-bold text-neutral-900 mb-1">
+                        <h2 className="inter text-xl sm:text-2xl font-bold text-neutral-900 mb-1">
                             O que você quer cozinhar hoje?
                         </h2>
                         <p className="raleway text-neutral-600 text-sm">

@@ -1,6 +1,6 @@
 import Hero from "../homecomponents/Hero";
 import SearchHome from "../homecomponents/SearchHome";
-import Recipes from "../homecomponents/Recipes";
+import RecipesHome from "../homecomponents/RecipesHome";
 
 
 export default function Home() {
@@ -8,7 +8,7 @@ export default function Home() {
     <>
       <Hero />
       <SearchHome />
-      <Recipes />
+      <RecipesHome />
     </>
   )
 }

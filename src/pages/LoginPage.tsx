@@ -22,7 +22,7 @@ export default function LoginPage() {
 
     try {
       await signIn(email, password)
-      navigate("/recipes")
+      navigate("/profile")
     } catch (err: any) {
       setError(err.message || "Erro ao fazer login. Verifique suas credenciais.")
     } finally {
