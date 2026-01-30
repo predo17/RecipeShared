@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
-import { ChefHat, Plus, User, Menu, Search, Home } from "lucide-react"
+import { ChefHat, Plus, User, Menu, Search, Home, Salad } from "lucide-react"
 import { useAuth } from "@/contexts/AuthContext"
 import { Button } from "@/components/ui/button"
 import {
@@ -38,14 +38,20 @@ export default function Navbar() {
                 </div>
 
                 <SheetClose asChild>
-                  <Link to="/" className="flex items-center gap-2 px-1">
+                  <Link to="/" aria-label="início" className="flex items-center gap-2 px-1">
                     <Home className="h-4 w-4" />
-                    Home
+                    Início
+                  </Link>
+                </SheetClose>
+                <SheetClose asChild>
+                  <Link to="/recipes" aria-label="Receitas" className="flex items-center gap-2 px-1">
+                    <Salad className="h-4 w-4" />
+                    Receitas
                   </Link>
                 </SheetClose>
 
                 <SheetClose asChild>
-                  <Link to="/create-recipe" className="flex items-center gap-2 px-1">
+                  <Link to="/create-recipe" aria-label="Criar Receita" className="flex items-center gap-2 px-1">
                     <Plus className="h-4 w-4" />
                     Criar Receita
                   </Link>
@@ -86,26 +92,38 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop menu */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-2">
             <Link to="/"
-              arial-label="Home">
-              <Button variant="ghost">Home</Button>
+              arial-label="início"
+              className="flex items-center gap-1.5 px-2 py-1.5 hover:bg-accent rounded-full"
+            >
+              <Home className="h-4 w-4 mt-0.5" />
+              Início
             </Link>
 
-            <Link to="/create-recipe"
-              arial-label="Criar Receita">
-              <Button variant="ghost" className="flex items-center gap-1.5">
-                <Plus className="h-4 w-4" />
-                Criar Receita
-              </Button>
+            <Link
+              to="/recipes"
+              arial-label="Receitas"
+              className="flex items-center gap-2 px-2 py-1.5 hover:bg-accent rounded-full"
+              >
+              <Salad className="h-4 w-4 mt-0.5" />
+              Receitas
+            </Link>
+
+            <Link
+              to="/create-recipe"
+              arial-label="Criar Receita"
+              className="flex items-center gap-1.5 px-2 py-1.5 hover:bg-accent rounded-full"
+              >
+              <Plus className="h-4 w-4 mt-0.5" />
+              Criar Receita
             </Link>
 
             {user ? (
               <Link
                 to="/profile"
-                className="flex items-center gap-1.5"
-                arial-label="Perfil"
-              >
+                className="flex items-center gap-1.5 hover:bg-accent rounded-full"
+                arial-label="Perfil">
                 <User className="h-4 w-4" />
                 Perfil
               </Link>
@@ -114,7 +132,7 @@ export default function Navbar() {
                 to="/register"
                 className="p-2 text-sm font-semibold bg-orange-500 hover:bg-orange-600 text-white rounded-sm"
                 arial-label="Criar Conta"
-              >
+                >
                 Criar Conta
               </Link>
             )}
@@ -126,7 +144,7 @@ export default function Navbar() {
               variant="ghost"
               size="icon"
               onClick={() => setShowSearch(prev => !prev)}
-            >
+              >
               <Search className="h-5 w-5" />
             </Button>
           </div>

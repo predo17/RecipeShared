@@ -32,7 +32,7 @@ export default function Hero() {
 
                         <div className="flex flex-wrap items-center gap-4">
                             <Link
-                                to=""
+                                to="/recipes"
                                 className="px-4 py-2 bg-white text-neutral-700 font-semibold rounded-sm overflow-hidden shadow shadow-coral-500/25 transition-all duration-300 hover:shadow-xl hover:shadow-coral-500/40 hover:-translate-y-0.5"
                             >
                                 Explorar Receitas

@@ -28,7 +28,7 @@ export default function Footer() {
                             </Link>
                         </li>
                         <li>
-                            <Link to="/" className="hover:text-foreground transition">
+                            <Link to="/recipes" className="hover:text-foreground transition">
                                 Receitas
                             </Link>
                         </li>
