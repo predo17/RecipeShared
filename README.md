@@ -38,7 +38,7 @@ Este projeto foi desenvolvido para aprimorar habilidades em:
 
 ### Fase 2: CRUD Básico ✅
 - [x] Configurar o Supabase 
-- [ ] Criar página de listagem de receitas ⏳
+- [x] Criar página de listagem de receitas 
 - [ ] Criar página de detalhes ⏳
 - [x] Implementar formulário de criação
 - [x] Sistema de roteamento
@@ -60,7 +60,7 @@ Este projeto foi desenvolvido para aprimorar habilidades em:
 
 ## 🎯 Funcionalidades Planejadas
 
-- ⏳ Listar receitas em grid responsivo
+- ✅ Listar receitas em grid responsivo
 - ⏳ Visualizar detalhes completos da receita
 - ⏳ Criar novas receitas
 - ⏳ Sistema de busca e filtros

@@ -1,13 +1,14 @@
 import { Clock, Star, User } from "lucide-react"
 import type { Recipe } from "@/lib/recipe"
-import { Button } from "./ui/button"
+import { Link } from "react-router-dom"
+
 
 type RecipeCardProps = {
     recipe: Recipe
     showDescription?: boolean
 }
 
-export function RecipeCard({ recipe ,showDescription = false,}: RecipeCardProps) {
+export function RecipeCard({ recipe, showDescription = false, }: RecipeCardProps) {
 
     return (
         <>
@@ -86,10 +87,12 @@ export function RecipeCard({ recipe ,showDescription = false,}: RecipeCardProps)
                 <div className="absolute inset-0 bg-linear-to-t from-amber-500/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                 {/* Botão*/}
-                <div className="absolute bottom-4 right-6 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">
-                    <Button className="bg-orange-500 text-white hover:bg-orange-600 rounded-full inter text-sm font-semibold shadow-lg transition-colors">
+                <div className="absolute bottom-5.5 right-6 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">
+                    <Link
+                        to={`/recipes/details/${encodeURIComponent(recipe?.title ?? "")}`}
+                        className="bg-orange-500 text-white hover:bg-orange-600 px-4 py-2.5 rounded-full inter text-sm font-semibold shadow-lg transition-colors">
                         Ver Receita
-                    </Button>
+                    </Link>
                 </div>
             </div>
         </>

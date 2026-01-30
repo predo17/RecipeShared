@@ -10,6 +10,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute"
 import CreateRecipePage from "./pages/CreateRecipePage"
 import Footer from "./components/layout/Footer"
 import RecipesPage from "./pages/RecipesPage"
+import RecipesPageDetails from "./pages/RecipesPageDetails"
 
 export default function App() {
   const location = useLocation()
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/login" element={<LoginPage/>} />
         <Route path="/register" element={<RegisterPage/>} />
         <Route path="/recipes" element={<RecipesPage/>} />
+         <Route path="/recipes/details/:title" element={<RecipesPageDetails/>} />
         <Route path="/create-recipe" element={<CreateRecipePage/>} />
         <Route
           path="/profile"
