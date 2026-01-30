@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export default function ShareRecipesSection() {
      return (
-    <section className="relative w-full py-16 px-4">
+    <section className="relative w-full py-16 px-4 bg-linear-to-br from-neutral-50 via-orange-50/30 to-amber-50/40">
       
       {/* Container da imagem */}
       <div className="relative w-full max-w-6xl mx-auto rounded-2xl overflow-hidden">
@@ -11,7 +11,7 @@ export default function ShareRecipesSection() {
         <img
           src="/share-recipe.avif"
           alt="Compartilhe sua receita favorita"
-          className="w-full h-[420px] md:h-[480px] object-cover"
+          className="w-full h-105 md:h-120 object-cover"
         />
 
         {/* Overlay */}
@@ -32,7 +32,7 @@ export default function ShareRecipesSection() {
 
             <div>
               <Link
-                to="/criar-receita"
+                to="/create-recipe"
                 className="inline-flex items-center justify-center px-6 py-3
                            rounded-xl bg-orange-500 hover:bg-orange-600  
                            text-white font-semibold transition"

@@ -104,7 +104,7 @@ export default function Hero() {
 
                     {/* imagem para mobile */}
 
-                    <div className="block md:hidden w-full max-w-md mx-auto">
+                    <div className={`block md:hidden w-full max-w-md mx-auto transition-all duration-1200 delay-300 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
                         <div className="relative w-full h-65 sm:h-80 rounded-3xl overflow-hidden shadow-2xl shadow-neutral-900/10 border border-white/50">
                             <img
                                 src="https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=800&q=80"

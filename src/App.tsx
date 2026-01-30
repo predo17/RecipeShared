@@ -8,6 +8,7 @@ import ProfilePage from "./pages/ProfilePage"
 import Navbar from "./components/layout/Navbar"
 import ProtectedRoute from "./components/auth/ProtectedRoute"
 import CreateRecipePage from "./pages/CreateRecipePage"
+import Footer from "./components/layout/Footer"
 
 export default function App() {
   const location = useLocation()
@@ -33,6 +34,7 @@ export default function App() {
           }
         />
       </Routes>
+      <Footer />
     </>
   )
 }
