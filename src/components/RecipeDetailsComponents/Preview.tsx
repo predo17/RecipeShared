@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react"
 import PreviewRecipe from "./PreviewRecipe"
-import type { Recipe } from "@/lib/recipe"
+import type { Recipe} from "@/lib/recipe"
 import { getAllRecipes } from "@/lib/recipeService"
-
 
 interface props {
     title: string | undefined
@@ -40,8 +39,8 @@ export default function Preview({ title }: props) {
     }
 
     return (
-        <>
-            <PreviewRecipe recipe={recipe} />
-        </>
+        <div className="px-4 py-10">
+            <PreviewRecipe recipe={recipe} steps={undefined} />
+        </div>
     )
 }
