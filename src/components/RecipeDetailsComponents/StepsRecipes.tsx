@@ -19,7 +19,7 @@ export default function StepsRecipes({ steps }: { steps: Step[] }) {
                     <h2 className="text-xl font-bold text-stone-900 tracking-tight">
                         Passos de Preparo
                     </h2>
-                    <div className="flex-1 flex items-center gap-3">
+                    <div className="hidden sm:flex flex-1 items-center gap-3">
                         <div className="h-px flex-1 bg-stone-200"></div>
                         <span className="text-xs font-semibold uppercase tracking-[0.15em] text-stone-500">
                             Para não ter erro

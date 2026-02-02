@@ -6,15 +6,14 @@ interface Props {
     steps: Step[] | undefined
 }
 
-export default function PreviewRecipe({ recipe}: Props) {
+export default function PreviewRecipe({ recipe }: Props) {
 
     return (
         <section className="container mx-auto ">
-            <div className="w-full flex gap-8">
-
+            <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-8 lg:auto-rows-auto">
                 {/* Imagem */}
-                <div className="flex-2">
-                    <div className="w-full h-160 relative overflow-hidden group rounded-sm">
+                <div className="lg:col-span-2 lg:row-start-1">
+                    <div className="w-full h-80 sm:h-105 md:h-125 lg:h-160 relative overflow-hidden group rounded-sm">
                         {/* Bordas decorativas duplas */}
                         <div className="absolute inset-0 border border-stone-300/50 rounded-sm"></div>
 
@@ -27,11 +26,9 @@ export default function PreviewRecipe({ recipe}: Props) {
                             />
                         </div>
                     </div>
-
-                    <StepsRecipes steps={recipe.steps} />
                 </div>
 
-                <div className="flex-1">
+                <div className="lg:col-start-3 lg:row-start-1 lg:row-span-3">
                     {/* Informações */}
                     <div className="space-y-8">
                         {/* Header com ícone */}
@@ -58,7 +55,7 @@ export default function PreviewRecipe({ recipe}: Props) {
                         </div>
 
                         {/* Métricas refinadas */}
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div className="p-4">
                                 <p className="inter text-xs font-bold uppercase tracking-[0.12em]  mb-2">
                                     Preparo
@@ -105,31 +102,31 @@ export default function PreviewRecipe({ recipe}: Props) {
                                 </span>
                             </div>
 
-                            <ul className="space-y-0">
+                            <ul className="space-y-0 max-h-81.25 overflow-x-hidden overflow-y-auto pr-1">
                                 {recipe.ingredients.map((item, index) => (
-                                    <li
-                                        key={index}
-                                        className="group relative py-3 px-3 -mx-3 hover:bg-white/80 transition-all duration-200 border-l-2 border-transparent hover:border-stone-400"
-                                        style={{
-                                            animation: `fadeInLeft 0.4s ease-out ${index * 0.04}s backwards`
-                                        }}
-                                    >
-                                        <div className="flex items-start gap-3">
-                                            <span className="text-[11px] font-mono text-stone-400 tabular-nums w-6 shrink-0 pt-0.5 opacity-40 group-hover:opacity-100 transition-opacity">
-                                                {String(index + 1).padStart(2, '0')}
-                                            </span>
-                                            <span className="text-[14px] leading-relaxed text-stone-700 flex-1">
-                                                <span className="font-semibold text-stone-900">{item.quantity}</span>
-                                                <span className="text-stone-400 mx-1.5">·</span>
-                                                <span className="font-light">{item.name}</span>
-                                            </span>
-                                        </div>
+                                        <li
+                                            key={index}
+                                            className="group relative py-3 px-3 -mx-3 hover:bg-white/80 transition-all duration-200 border-l-2 border-transparent hover:border-stone-400"
+                                            style={{
+                                                animation: `fadeInLeft 0.4s ease-out ${index * 0.04}s backwards`
+                                            }}
+                                        >
+                                            <div className="flex items-start gap-3">
+                                                <span className="text-[11px] font-mono text-stone-400 tabular-nums w-6 shrink-0 pt-0.5 opacity-40 group-hover:opacity-100 transition-opacity">
+                                                    {String(index + 1).padStart(2, '0')}
+                                                </span>
+                                                <span className="text-[14px] leading-relaxed text-stone-700 flex-1">
+                                                    <span className="font-semibold text-stone-900">{item.quantity}</span>
+                                                    <span className="text-stone-400 mx-1.5">·</span>
+                                                    <span className="font-light">{item.name}</span>
+                                                </span>
+                                            </div>
 
-                                        {index < recipe.ingredients.length - 1 && (
-                                            <div className="absolute bottom-0 left-12 right-0 h-px bg-linear-to-r from-stone-200/50 via-stone-200/30 to-transparent"></div>
-                                        )}
-                                    </li>
-                                ))}
+                                            {index < recipe.ingredients.length - 1 && (
+                                                <div className="absolute bottom-0 left-12 right-0 h-px bg-linear-to-r from-stone-200/50 via-stone-200/30 to-transparent"></div>
+                                            )}
+                                        </li>
+                                    ))}
                             </ul>
                         </div>
 
@@ -140,6 +137,10 @@ export default function PreviewRecipe({ recipe}: Props) {
                             <div className="w-1 h-1 rounded-full bg-stone-400"></div>
                         </div>
                     </div>
+                </div>
+
+                <div className="lg:col-span-2 lg:row-start-2">
+                    <StepsRecipes steps={recipe.steps} />
                 </div>
 
             </div>
