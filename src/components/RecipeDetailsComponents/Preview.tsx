@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react"
 import PreviewRecipe from "./PreviewRecipe"
-import type { Recipe} from "@/lib/recipe"
+import type { Recipe } from "@/lib/recipe"
 import { getAllRecipes } from "@/lib/recipeService"
 import RecipeDetailsSkeleton from "../RecipeDetailsSkeleton"
 import RelatedRecipes from "./RelatedRecipes"
+import CommentsRecipe from "./CommentsRecipe"
 
 interface props {
     title: string | undefined
@@ -43,7 +44,9 @@ export default function Preview({ title }: props) {
     return (
         <div className="px-4 py-10">
             <PreviewRecipe recipe={recipe} steps={recipe.steps} />
-             <RelatedRecipes category={recipe.category} />
+            <RelatedRecipes category={recipe.category} excludeId={recipe.id} />
+            <CommentsRecipe recipeId={recipe.id} />
+
         </div>
     )
 }

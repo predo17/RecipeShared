@@ -15,6 +15,16 @@ export interface CreateRecipeData {
   authorId: string
 }
 
+export interface RecipeComment {
+  id: string
+  userId: string
+  avatar: string | null
+  userName: string
+  userBio: string | null
+  comment: string
+  createdAt: string
+}
+
 // Buscar todas as receitas
 export async function getAllRecipes(): Promise<Recipe[]> {
   try {
@@ -78,7 +88,7 @@ export async function getRecipeById(id: string): Promise<Recipe | null> {
   }
 }
 // Buscar receitas por categoria
-export async function getRecipesByCategory(category: string, limit = 4): Promise<Recipe[]> {
+export async function getRecipesByCategory(category: string, excludeId?: string, limit = 4): Promise<Recipe[]> {
   try {
     let query = supabase
       .from("recipes")
@@ -100,6 +110,10 @@ export async function getRecipesByCategory(category: string, limit = 4): Promise
       .order("created_at", { ascending: false })
       .limit(limit)
 
+    if (excludeId) {
+      query = (query as any).neq("id", excludeId)
+    }
+
     const { data, error } = await query
 
     if (error) throw error
@@ -108,6 +122,71 @@ export async function getRecipesByCategory(category: string, limit = 4): Promise
   } catch (error) {
     console.error("Erro ao buscar receitas por categoria:", error)
     throw error
+  }
+}
+
+// Buscar comentários de uma receita (com dados do usuário: avatar, nome, bio)
+export async function getRecipeComments(recipeId: string): Promise<RecipeComment[]> {
+  const { data, error } = await supabase
+    .from("recipe_ratings")
+    .select(`
+      id,
+      user_id,
+      rating,
+      comment,
+      created_at,
+      user:users(id, name, avatar, bio)
+    `)
+    .eq("recipe_id", recipeId)
+    .order("created_at", { ascending: false })
+
+  if (error) throw error
+
+  return (data || []).map((row: any) => ({
+    id: row.id,
+    userId: row.user_id,
+    avatar: row.user?.avatar ?? null,
+    userName: row.user?.name ?? "Anônimo",
+    userBio: row.user?.bio ?? null,
+    comment: row.comment ?? "",
+    createdAt: row.created_at,
+  }))
+}
+
+// Criar comentário em uma receita
+export async function createRecipeComment(
+  recipeId: string,
+  userId: string,
+  comment: string
+): Promise<RecipeComment> {
+  const { data, error } = await supabase
+    .from("recipe_ratings")
+    .insert({
+      recipe_id: recipeId,
+      user_id: userId,
+      comment: comment.trim(),
+    })
+    .select(`
+      id,
+      user_id,
+      rating,
+      comment,
+      created_at,
+      user:users(id, name, avatar, bio)
+    `)
+    .single()
+
+  if (error) throw error
+  const row = data as any
+
+  return {
+    id: row.id,
+    userId: row.user_id,
+    avatar: row.user?.avatar ?? null,
+    userName: row.user?.name ?? "Anônimo",
+    userBio: row.user?.bio ?? null,
+    comment: row.comment ?? "",
+    createdAt: row.created_at,
   }
 }
 

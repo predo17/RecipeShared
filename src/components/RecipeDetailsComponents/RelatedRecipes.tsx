@@ -7,9 +7,10 @@ import { RecipeCard } from "@/components/RecipeCard"
 
 interface Props {
     category: string
+    excludeId?: string
 }
  
-export default function RelatedRecipes({ category  }: Props) {
+export default function RelatedRecipes({ category, excludeId  }: Props) {
     const [recipes, setRecipes] = useState<Recipe[]>([])
     const [loading, setLoading] = useState(true)
 
@@ -19,7 +20,7 @@ export default function RelatedRecipes({ category  }: Props) {
         async function fetchRelated() {
             try {
                 setLoading(true)
-                const data = await getRecipesByCategory(category, 4)
+                const data = await getRecipesByCategory(category, excludeId, 4)
                 if (mounted) setRecipes(data)
             } catch (err) {
                 console.error(err)
@@ -31,7 +32,7 @@ export default function RelatedRecipes({ category  }: Props) {
         return () => {
             mounted = false
         }
-    }, [category])
+    }, [category, excludeId])
 
     return (
         <section className="container mx-auto mt-8">
