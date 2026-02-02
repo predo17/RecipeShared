@@ -16,7 +16,7 @@ export default function StepsRecipes({ steps }: { steps: Step[] }) {
                     <div className="w-11 h-11 flex items-center justify-center bg-linear-to-br from-stone-100 to-stone-50 border border-stone-200 rounded-lg shadow-sm">
                         <img src="/Bowl.png" alt="bowl" className="w-6 h-6 object-contain" />
                     </div>
-                    <h2 className="text-xl font-bold text-stone-900 tracking-tight">
+                    <h2 className="inter text-xl font-bold text-stone-900 tracking-tight">
                         Passos de Preparo
                     </h2>
                     <div className="hidden sm:flex flex-1 items-center gap-3">

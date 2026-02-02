@@ -77,6 +77,39 @@ export async function getRecipeById(id: string): Promise<Recipe | null> {
     throw error
   }
 }
+// Buscar receitas por categoria
+export async function getRecipesByCategory(category: string, limit = 4): Promise<Recipe[]> {
+  try {
+    let query = supabase
+      .from("recipes")
+      .select(`
+        *,
+        author:users(id, name, email, avatar, bio),
+        ratings:recipe_ratings(
+          id,
+          user_id,
+          user:users(name),
+          rating,
+          comment,
+          created_at
+        ),
+        ingredients:ingredients(*),
+        steps:steps(*)
+      `)
+      .eq("category", category)
+      .order("created_at", { ascending: false })
+      .limit(limit)
+
+    const { data, error } = await query
+
+    if (error) throw error
+
+    return (data || []).map(transformRecipe)
+  } catch (error) {
+    console.error("Erro ao buscar receitas por categoria:", error)
+    throw error
+  }
+}
 
 // Criar nova receita
 export async function createRecipe(recipeData: CreateRecipeData): Promise<Recipe> {
@@ -195,17 +228,17 @@ function transformRecipe(data: any): Recipe {
     authorId: data.author_id || data.author?.id || "",
     author: data.author
       ? {
-          id: data.author.id,
-          name: data.author.name,
-          email: data.author.email,
-          avatar: data.author.avatar,
-          bio: data.author.bio,
-        }
+        id: data.author.id,
+        name: data.author.name,
+        email: data.author.email,
+        avatar: data.author.avatar,
+        bio: data.author.bio,
+      }
       : {
-          id: "",
-          name: "Desconhecido",
-          email: "",
-        },
+        id: "",
+        name: "Desconhecido",
+        email: "",
+      },
     ratings,
     averageRating: Math.round(averageRating * 10) / 10,
     createdAt: data.created_at,
