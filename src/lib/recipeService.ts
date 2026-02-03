@@ -1,3 +1,4 @@
+
 import { supabase } from "./Supabase"
 import type { Recipe, Ingredient, Step } from "./recipe"
 
@@ -13,6 +14,18 @@ export interface CreateRecipeData {
   ingredients: Omit<Ingredient, "id">[]
   steps: Omit<Step, "id">[]
   authorId: string
+}
+
+export interface UpdateRecipeData {
+  title: string
+  description: string
+  imageUrl: string
+  prepTime: number
+  cookTime: number
+  servings: number
+  category: string
+  ingredients: Omit<Ingredient, "id">[]
+  steps: Omit<Step, "id">[]
 }
 
 export interface RecipeComment {
@@ -260,6 +273,83 @@ export async function createRecipe(recipeData: CreateRecipeData): Promise<Recipe
     return fullRecipe
   } catch (error) {
     console.error("Erro ao criar receita:", error)
+    throw error
+  }
+}
+
+// Atualizar receita existente (substitui ingredientes e passos)
+export async function updateRecipe(
+  recipeId: string,
+  recipeData: UpdateRecipeData
+): Promise<Recipe> {
+  try {
+    const { error: recipeError } = await supabase
+      .from("recipes")
+      .update({
+        title: recipeData.title,
+        description: recipeData.description,
+        image_url: recipeData.imageUrl,
+        prep_time: recipeData.prepTime,
+        cook_time: recipeData.cookTime,
+        servings: recipeData.servings,
+        category: recipeData.category,
+      })
+      .eq("id", recipeId)
+
+    if (recipeError) throw recipeError
+
+    // Substituir ingredientes
+    const { error: deleteIngredientsError } = await supabase
+      .from("ingredients")
+      .delete()
+      .eq("recipe_id", recipeId)
+
+    if (deleteIngredientsError) throw deleteIngredientsError
+
+    if (recipeData.ingredients && recipeData.ingredients.length > 0) {
+      const ingredientsPayload = recipeData.ingredients.map((ing) => ({
+        recipe_id: recipeId,
+        name: ing.name,
+        quantity: ing.quantity,
+        unit: ing.unit,
+      }))
+
+      const { error: insertIngredientsError } = await supabase
+        .from("ingredients")
+        .insert(ingredientsPayload)
+
+      if (insertIngredientsError) throw insertIngredientsError
+    }
+
+    // Substituir passos
+    const { error: deleteStepsError } = await supabase
+      .from("steps")
+      .delete()
+      .eq("recipe_id", recipeId)
+
+    if (deleteStepsError) throw deleteStepsError
+
+    if (recipeData.steps && recipeData.steps.length > 0) {
+      const stepsPayload = recipeData.steps.map((step) => ({
+        recipe_id: recipeId,
+        order: step.order,
+        instruction: step.instruction,
+        time_minutes: step.timeMinutes ?? null,
+      }))
+
+      const { error: insertStepsError } = await supabase
+        .from("steps")
+        .insert(stepsPayload)
+
+      if (insertStepsError) throw insertStepsError
+    }
+
+    const fullRecipe = await getRecipeById(recipeId)
+    if (!fullRecipe) throw new Error("Erro ao buscar receita atualizada")
+
+    return fullRecipe
+  } catch (error) {
+    console.error("Erro ao atualizar receita:", error)
     throw error
   }
 }

@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -5,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { getRecipeComments, createRecipeComment, type RecipeComment } from "@/lib/recipeService";
 import { FormatCount, formatRelativeTime } from "@/utils/Counter";
-import { ArrowUp } from "lucide-react";
+import { ArrowUp, MessageCircleMoreIcon } from "lucide-react";
 
 interface CommentsRecipeProps {
   recipeId: string;
@@ -81,14 +82,12 @@ export default function CommentsRecipe({ recipeId }: CommentsRecipeProps) {
         {/* Header Section */}
         <div className="flex items-center gap-3 mb-8 pb-4 border-b border-stone-200">
           <div className="w-11 h-11 flex items-center justify-center bg-linear-to-br from-stone-100 to-stone-50 border border-stone-200 rounded-lg shadow-sm">
-            <svg className="w-6 h-6 text-stone-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
+            <MessageCircleMoreIcon className="w-6 h-6 text-stone-600" />
           </div>
-          <h2 className="text-xl font-bold text-stone-900 tracking-tight">
+          <h2 className="inter text-xl font-bold text-stone-900 tracking-tight">
             Comentários da Comunidade
           </h2>
-          <div className="flex-1 flex items-center gap-3">
+          <div className="hidden flex-1 sm:flex items-center gap-3">
             <div className="h-px flex-1 bg-stone-200"></div>
             <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-stone-500">
               {FormatCount(comments.length)} {comments.length === 1 ? "comentário" : "comentários"}
@@ -100,12 +99,12 @@ export default function CommentsRecipe({ recipeId }: CommentsRecipeProps) {
           {/* LEFT SIDE - Comments List */}
           <div className="lg:col-span-9 space-y-4">
             <div className="bg-linear-to-brom-stone-50/40 to-transparent border border-stone-200 rounded-xl p-6 shadow-sm">
-              <h3 className="text-sm font-bold uppercase tracking-widest text-stone-900 mb-6 flex items-center gap-2">
+              <h3 className="inter text-sm font-bold uppercase tracking-widest text-stone-900 mb-6 flex items-center gap-2">
                 <div className="w-1 h-4 bg-stone-800 rounded-full"></div>
                 Discussões
               </h3>
 
-              <div className="space-y-5 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+              <div className="space-y-5 max-h-150 overflow-y-auto pr-2 custom-scrollbar">
                 {loading ? (
                   <div className="text-center py-12 text-stone-500 text-sm">
                     Carregando comentários...
@@ -173,11 +172,9 @@ export default function CommentsRecipe({ recipeId }: CommentsRecipeProps) {
                 {!loading && comments.length === 0 && !error && (
                   <div className="text-center py-16">
                     <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-stone-100 flex items-center justify-center">
-                      <svg className="w-10 h-10 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                      </svg>
+                      <MessageCircleMoreIcon className="w-10 h-10 text-stone-400" />
                     </div>
-                    <p className="text-stone-500 text-sm font-light">
+                    <p className="releway text-stone-500 text-sm font-light">
                       Nenhum comentário ainda. Seja o primeiro!
                     </p>
                   </div>
@@ -228,7 +225,7 @@ export default function CommentsRecipe({ recipeId }: CommentsRecipeProps) {
                         value={commentText}
                         onChange={(e) => setCommentText(e.target.value)}
                         placeholder="Compartilhe sua experiência, dicas ou sugestões..."
-                        className="raleway min-h-[160px] resize-none border-stone-300 focus:border-stone-400 focus:ring-stone-300 text-sm leading-relaxed font-medium"
+                        className="raleway min-h-40 resize-none border-stone-300 focus:border-stone-400 focus:ring-stone-300 text-sm leading-relaxed font-medium"
                         disabled={submitting}
                         minLength={10}
                       />
