@@ -22,7 +22,7 @@ export default function PreviewRecipe({ recipe }: Props) {
                             <img
                                 src={recipe.imageUrl}
                                 alt={recipe.title}
-                                className="w-full h-full object-contain filter contrast-105 saturate-105 transition-all duration-700 group-hover:contrast-110 group-hover:saturate-110"
+                                className="w-full h-full object-cover filter contrast-105 saturate-105 transition-all duration-700 group-hover:contrast-110 group-hover:saturate-110"
                             />
                         </div>
                     </div>
