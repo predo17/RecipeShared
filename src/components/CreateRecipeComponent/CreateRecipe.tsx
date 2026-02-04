@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
-import { Plus, X, ArrowLeft, ChefHat, Clock, Users, Image as ImageIcon, Tag } from "lucide-react"
+import { Plus, X, ArrowLeft, ChefHat, Clock, Users, Image as ImageIcon, Tag, Upload, Link, ImageUp } from "lucide-react"
 import type { Recipe } from "@/lib/recipe"
-import { createRecipe, updateRecipe, type CreateRecipeData, type UpdateRecipeData } from "@/lib/recipeService"
+import { createRecipe, updateRecipe, uploadRecipeImage, type CreateRecipeData, type UpdateRecipeData } from "@/lib/recipeService"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -45,6 +45,10 @@ export default function CreateRecipe() {
   const [servings, setServings] = useState("")
   const [category, setCategory] = useState("")
 
+  const [imageSourceMode, setImageSourceMode] = useState<"url" | "upload">("url")
+  const [imageUploading, setImageUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   // Ingredientes e passos
   const [ingredients, setIngredients] = useState<IngredientForm[]>([
     { name: "", quantity: "", unit: "" },
@@ -67,22 +71,22 @@ export default function CreateRecipe() {
     const nextIngredients: IngredientForm[] =
       editRecipe.ingredients && editRecipe.ingredients.length > 0
         ? editRecipe.ingredients.map((ing) => ({
-            name: ing.name ?? "",
-            quantity: String(ing.quantity ?? ""),
-            unit: ing.unit ?? "",
-          }))
+          name: ing.name ?? "",
+          quantity: String(ing.quantity ?? ""),
+          unit: ing.unit ?? "",
+        }))
         : [{ name: "", quantity: "", unit: "" }]
 
     const nextSteps: StepForm[] =
       editRecipe.steps && editRecipe.steps.length > 0
         ? editRecipe.steps
-            .slice()
-            .sort((a, b) => a.order - b.order)
-            .map((s) => ({
-              order: s.order,
-              instruction: s.instruction ?? "",
-              timeMinutes: s.timeMinutes != null ? String(s.timeMinutes) : "",
-            }))
+          .slice()
+          .sort((a, b) => a.order - b.order)
+          .map((s) => ({
+            order: s.order,
+            instruction: s.instruction ?? "",
+            timeMinutes: s.timeMinutes != null ? String(s.timeMinutes) : "",
+          }))
         : [{ order: 1, instruction: "", timeMinutes: "" }]
 
     setIngredients(nextIngredients)
@@ -127,6 +131,22 @@ export default function CreateRecipe() {
     const updated = [...steps]
     updated[index] = { ...updated[index], [field]: value }
     setSteps(updated)
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !user?.id) return
+    setImageUploading(true)
+    try {
+      const url = await uploadRecipeImage(file, user.id)
+      setImageUrl(url)
+    } catch (err) {
+      console.error(err)
+      setError("Falha ao enviar a imagem. Tente novamente ou use a URL.")
+    } finally {
+      setImageUploading(false)
+      e.target.value = ""
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -222,8 +242,8 @@ export default function CreateRecipe() {
               <ChefHat className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold text-stone-900 tracking-tight" 
-                  style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
+              <h1 className="text-4xl font-bold text-stone-900 tracking-tight"
+                style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
                 {isEditMode ? "Editar Receita" : "Criar Nova Receita"}
               </h1>
               <p className="text-sm text-stone-500 mt-1">
@@ -292,30 +312,142 @@ export default function CreateRecipe() {
               </div>
 
               <div className="space-y-3">
-                <Label htmlFor="imageUrl" className="text-sm font-semibold text-stone-900 flex items-center gap-2">
+                <Label className="text-sm font-semibold text-stone-900 flex items-center gap-2">
                   <ImageIcon className="w-4 h-4" />
-                  URL da Imagem
+                  Imagem da Receita
                 </Label>
-                <Input
-                  id="imageUrl"
-                  type="url"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  placeholder="https://exemplo.com/imagem-da-receita.jpg"
-                  className="border-stone-300 focus:border-stone-500 focus:ring-stone-300 h-11"
-                />
-                {imageUrl && (
-                  <div className="mt-3 rounded border border-stone-200 p-2 bg-stone-50">
-                    <img 
-                      src={imageUrl} 
-                      alt="Preview" 
-                      className="w-full h-80 sm:h-105 md:h-125 lg:h-160 object-cover"
-                      onError={(e) => {
-                        e.currentTarget.src = "https://via.placeholder.com/400x300?text=Imagem+Inválida"
-                      }}
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant={imageSourceMode === "upload" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setImageSourceMode("upload")}
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    Upload
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={imageSourceMode === "url" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setImageSourceMode("url")}
+                  >
+                    <Link className="w-4 h-4 mr-2" />
+                    URL da imagem
+                  </Button>
+                </div>
+
+                {imageSourceMode === "url" && (
+                  <>
+                    <Input
+                      id="imageUrl"
+                      type="url"
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      placeholder="https://exemplo.com/imagem-da-receita.jpg"
+                      className="border-stone-300 focus:border-stone-500 focus:ring-stone-300 h-11"
                     />
+                    {imageUrl && (
+                      <div className="mt-3 rounded border border-stone-200 p-2 bg-stone-50">
+                        <img
+                          src={imageUrl}
+                          alt="Preview"
+                          className="w-full h-80 sm:h-105 md:h-125 lg:h-160 object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = "https://via.placeholder.com/400x300?text=Imagem+Inválida"
+                          }}
+                        />
+                      </div>
+                    )}
+                  </>
+                )}
+
+
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageUpload}
+                />
+
+
+                {imageSourceMode === "upload" && (
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Enviar imagem da receita"
+                    onClick={() => {
+                      if (!imageUploading) {
+                        fileInputRef.current?.click()
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (
+                        (e.key === "Enter" || e.key === " ") &&
+                        !imageUploading
+                      ) {
+                        fileInputRef.current?.click()
+                      }
+                    }}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={(e) => {
+                      e.preventDefault()
+                      const file = e.dataTransfer.files?.[0]
+                      if (file) {
+                        handleImageUpload({ target: { files: [file] } } as any)
+                      }
+                    }}
+
+                    className="
+      mt-3
+      rounded
+      border
+      border-stone-200
+      border-dashed
+      p-2
+      bg-stone-50
+      min-h-48 sm:min-h-64 md:min-h-80 lg:min-h-96
+      flex
+      items-center
+      justify-center
+      cursor-pointer
+      hover:bg-stone-100
+      transition-colors
+      focus:outline-none
+      focus:ring-2
+      focus:ring-stone-400
+      focus:ring-offset-2
+    "
+                  >
+                    {imageUploading ? (
+                      <span className="text-stone-500 text-sm">
+                        Enviando imagem...
+                      </span>
+                    ) : imageUrl ? (
+                      <img
+                        src={imageUrl}
+                        alt="Preview da receita"
+                        className="w-full h-80 sm:h-105 md:h-125 lg:h-160 object-cover rounded"
+                        onError={(e) => {
+                          e.currentTarget.src =
+                            "https://via.placeholder.com/400x300?text=Imagem+Inválida"
+                        }}
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center">
+                        <ImageUp className="w-6 h-6 text-stone-500 mb-2" />
+                        <p className="text-stone-500 text-sm">
+                          Clique para enviar
+                        </p>
+                        <p className="text-stone-500 text-xs">
+                          PNG, JPG ou WEBP
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
+
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -393,7 +525,7 @@ export default function CreateRecipe() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 bg-white border border-stone-200 rounded-lg flex items-center justify-center shadow-sm">
-                   <img src="/ingredientes.png" alt="ingredients" className="w-5 h-5 object-contain" />
+                    <img src="/ingredientes.png" alt="ingredients" className="w-5 h-5 object-contain" />
                   </div>
                   <div>
                     <CardTitle className="inter text-lg">Ingredientes</CardTitle>
@@ -416,8 +548,8 @@ export default function CreateRecipe() {
             </CardHeader>
             <CardContent className="space-y-3 pt-6">
               {ingredients.map((ingredient, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="group relative bg-stone-50/50 border border-stone-200 rounded-lg p-4 hover:bg-white hover:border-amber-200 hover:shadow-sm transition-all"
                   style={{
                     animation: `slideIn 0.3s ease-out ${index * 0.05}s backwards`
@@ -501,8 +633,8 @@ export default function CreateRecipe() {
             </CardHeader>
             <CardContent className="space-y-4 pt-6">
               {steps.map((step, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="group relative"
                   style={{
                     animation: `slideIn 0.3s ease-out ${index * 0.05}s backwards`
@@ -586,8 +718,8 @@ export default function CreateRecipe() {
               >
                 Cancelar
               </Button>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={loading}
                 className="bg-linear-to-r from-stone-800 to-stone-700 hover:from-stone-900 hover:to-stone-800 text-white font-semibold px-8 shadow-lg hover:shadow-xl transition-all"
               >

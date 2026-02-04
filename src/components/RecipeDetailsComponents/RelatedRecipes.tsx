@@ -1,4 +1,4 @@
-// ...existing code...
+
 import { useEffect, useState } from "react"
 import type { Recipe } from "@/lib/recipe"
 import { getRecipesByCategory } from "@/lib/recipeService"

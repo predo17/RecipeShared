@@ -354,6 +354,22 @@ export async function updateRecipe(
   }
 }
 
+const RECIPE_IMAGES_BUCKET = "recipe-images"
+
+/** Faz upload de uma imagem para o Supabase Storage e retorna a URL pública. */
+export async function uploadRecipeImage(file: File, userId: string): Promise<string> {
+  const ext = file.name.split(".").pop()?.toLowerCase() || "jpg"
+  const path = `${userId}/${Date.now()}.${ext}`
+  const { data, error } = await supabase.storage
+    .from(RECIPE_IMAGES_BUCKET)
+    .upload(path, file, { upsert: false })
+  if (error) throw error
+  const {
+    data: { publicUrl },
+  } = supabase.storage.from(RECIPE_IMAGES_BUCKET).getPublicUrl(data.path)
+  return publicUrl
+}
+
 // Função auxiliar para transformar dados do Supabase para o formato Recipe
 function transformRecipe(data: any): Recipe {
   // Calcular média de avaliações
