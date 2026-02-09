@@ -1,5 +1,7 @@
 import type { Recipe, Step } from "@/lib/recipe"
 import StepsRecipes from "./StepsRecipes"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { ChefHat } from "lucide-react"
 
 interface Props {
     recipe: Recipe
@@ -88,7 +90,7 @@ export default function PreviewRecipe({ recipe }: Props) {
                         </div>
 
                         {/* Ingredientes premium */}
-                        <div className="bg-linear-to-b from-stone-50/40 to-transparent border border-stone-200 rounded-lg p-6 shadow-sm">
+                        <div className="relative bg-linear-to-b from-stone-50/40 to-transparent border border-stone-200 rounded-lg p-6 shadow-sm ">
                             <div className="flex items-center gap-3 mb-5 pb-4 border-b border-stone-200">
                                 <div className="w-9 h-9 flex items-center justify-center bg-white border border-stone-200 rounded-lg shadow-sm">
                                     <img src="/ingredientes.png" alt="ingredients" className="w-5 h-5 object-contain" />
@@ -104,38 +106,81 @@ export default function PreviewRecipe({ recipe }: Props) {
 
                             <ul className="space-y-0 max-h-81.25 overflow-x-hidden overflow-y-auto pr-1">
                                 {recipe.ingredients.map((item, index) => (
-                                        <li
-                                            key={index}
-                                            className="group relative py-3 px-3 -mx-3 hover:bg-white/80 transition-all duration-200 border-l-2 border-transparent hover:border-stone-400"
-                                            style={{
-                                                animation: `fadeInLeft 0.4s ease-out ${index * 0.04}s backwards`
-                                            }}
-                                        >
-                                            <div className="flex items-start gap-3">
-                                                <span className="text-[11px] font-mono text-stone-400 tabular-nums w-6 shrink-0 pt-0.5 opacity-40 group-hover:opacity-100 transition-opacity">
-                                                    {String(index + 1).padStart(2, '0')}
-                                                </span>
-                                                <span className="text-[14px] leading-relaxed text-stone-700 flex-1">
-                                                    <span className="font-semibold text-stone-900">{item.quantity}</span>
-                                                    <span className="text-stone-400 mx-1.5">·</span>
-                                                    <span className="font-light">{item.name}</span>
-                                                </span>
-                                            </div>
+                                    <li
+                                        key={index}
+                                        className="group relative py-3 px-3 -mx-3 hover:bg-white/80 transition-all duration-200 border-l-2 border-transparent hover:border-stone-400"
+                                        style={{
+                                            animation: `fadeInLeft 0.4s ease-out ${index * 0.04}s backwards`
+                                        }}
+                                    >
+                                        <div className="flex items-start gap-3">
+                                            <span className="text-[11px] font-mono text-stone-400 tabular-nums w-6 shrink-0 pt-0.5 opacity-40 group-hover:opacity-100 transition-opacity">
+                                                {String(index + 1).padStart(2, '0')}
+                                            </span>
+                                            <span className="text-[14px] leading-relaxed text-stone-700 flex-1">
+                                                <span className="font-semibold text-stone-900">{item.quantity}</span>
+                                                <span className="text-stone-400 mx-1.5">·</span>
+                                                <span className="font-light">{item.name}</span>
+                                            </span>
+                                        </div>
 
-                                            {index < recipe.ingredients.length - 1 && (
-                                                <div className="absolute bottom-0 left-12 right-0 h-px bg-linear-to-r from-stone-200/50 via-stone-200/30 to-transparent"></div>
-                                            )}
-                                        </li>
-                                    ))}
+                                        {index < recipe.ingredients.length - 1 && (
+                                            <div className="absolute bottom-0 left-12 right-0 h-px bg-linear-to-r from-stone-200/50 via-stone-200/30 to-transparent"></div>
+                                        )}
+                                    </li>
+                                ))}
                             </ul>
+
+
                         </div>
 
-                        {/* Ornamento decorativo */}
-                        <div className="flex items-center justify-center gap-1.5 pt-2 opacity-15">
-                            <div className="w-1 h-1 rounded-full bg-stone-400"></div>
-                            <div className="w-1 h-1 rounded-full bg-stone-400"></div>
-                            <div className="w-1 h-1 rounded-full bg-stone-400"></div>
+                        <div className="hidden sm:block">
+                            <div className="bg-linear-to-b from-stone-50/40 to-transparent border border-stone-200 rounded-lg p-6 shadow-sm">
+                                <div className="flex items-center gap-3 mb-5 pb-4 border-b border-stone-200">
+                                    <h2 className="text-sm font-bold uppercase tracking-[0.12em] text-stone-900">
+                                        Criado(a) por
+                                    </h2>
+                                    <div className="flex-1 h-px bg-linear-to-r from-stone-300 to-transparent"></div>
+                                </div>
+
+                                <div className="flex items-center gap-4 group hover:bg-white/60 transition-all duration-200 p-3 -mx-3 rounded-lg">
+                                    <div className="relative">
+                                        <Avatar className="w-16 h-16 border-2 border-stone-300 shadow-md ring-2 ring-amber-100 group-hover:ring-amber-200 transition-all">
+                                            <AvatarImage
+                                                src={recipe.author.avatar || undefined}
+                                                alt={recipe.author.name}
+                                                className="object-cover"
+                                            />
+                                            <AvatarFallback className="bg-linear-to-br from-amber-200 to-amber-100 text-amber-800 font-bold text-lg">
+                                                {recipe.author.name.substring(0, 2).toUpperCase()}
+                                            </AvatarFallback>
+                                        </Avatar>
+
+                                        {/* Badge de Chef */}
+                                        <div className="absolute -top-1 -right-1 w-7 h-7 bg-linear-to-br from-amber-500 to-amber-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+                                            <ChefHat className="w-4 h-4 text-white" />
+                                        </div>
+                                    </div>
+
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="font-bold text-stone-900 text-base leading-tight mb-1">
+                                            {recipe.author.name}
+                                        </h3>
+                                        <p className="text-xs text-stone-500 leading-relaxed line-clamp-2">
+                                            {recipe.author.bio}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Ornamento decorativo */}
+                                <div className="mt-4 flex items-center justify-center gap-1.5 opacity-15">
+                                    <div className="w-1 h-1 rounded-full bg-stone-400"></div>
+                                    <div className="w-1 h-1 rounded-full bg-stone-400"></div>
+                                    <div className="w-1 h-1 rounded-full bg-stone-400"></div>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
                 </div>
 
@@ -143,6 +188,52 @@ export default function PreviewRecipe({ recipe }: Props) {
                     <StepsRecipes steps={recipe.steps} />
                 </div>
 
+                <div className="flex sm:hidden">
+                    <div className="w-full bg-linear-to-b from-stone-50/40 to-transparent border border-stone-200 rounded-lg p-6 shadow-sm">
+                        <div className="flex items-center gap-3 mb-5 pb-4 border-b border-stone-200">
+                            <h2 className="text-sm font-bold uppercase tracking-[0.12em] text-stone-900">
+                                Criado(a) por
+                            </h2>
+                            <div className="flex-1 h-px bg-linear-to-r from-stone-300 to-transparent"></div>
+                        </div>
+
+                        <div className="flex items-center gap-4 group hover:bg-white/60 transition-all duration-200 p-3 -mx-3 rounded-lg">
+                            <div className="relative">
+                                <Avatar className="w-16 h-16 border-2 border-stone-300 shadow-md ring-2 ring-amber-100 group-hover:ring-amber-200 transition-all">
+                                    <AvatarImage
+                                        src={recipe.author.avatar || undefined}
+                                        alt={recipe.author.name}
+                                        className="object-cover"
+                                    />
+                                    <AvatarFallback className="bg-linear-to-br from-amber-200 to-amber-100 text-amber-800 font-bold text-lg">
+                                        {recipe.author.name.substring(0, 2).toUpperCase()}
+                                    </AvatarFallback>
+                                </Avatar>
+
+                                {/* Badge de Chef */}
+                                <div className="absolute -top-1 -right-1 w-7 h-7 bg-linear-to-br from-amber-500 to-amber-600 rounded-full flex items-center justify-center shadow-lg border-2 border-white">
+                                    <ChefHat className="w-4 h-4 text-white" />
+                                </div>
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                                <h3 className="font-bold text-stone-900 text-base leading-tight mb-1">
+                                    {recipe.author.name}
+                                </h3>
+                                <p className="text-xs text-stone-500 leading-relaxed line-clamp-2">
+                                    {recipe.author.bio}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Ornamento decorativo */}
+                        <div className="mt-4 flex items-center justify-center gap-1.5 opacity-15">
+                            <div className="w-1 h-1 rounded-full bg-stone-400"></div>
+                            <div className="w-1 h-1 rounded-full bg-stone-400"></div>
+                            <div className="w-1 h-1 rounded-full bg-stone-400"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     )
