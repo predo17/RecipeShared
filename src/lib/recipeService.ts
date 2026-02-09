@@ -354,7 +354,7 @@ export async function updateRecipe(
   }
 }
 
-const RECIPE_IMAGES_BUCKET = "recipe-images"
+const RECIPE_IMAGES_BUCKET = "Galeria"
 
 /** Faz upload de uma imagem para o Supabase Storage e retorna a URL pública. */
 export async function uploadRecipeImage(file: File, userId: string): Promise<string> {
