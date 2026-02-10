@@ -120,6 +120,10 @@ export default function PreviewRecipe({ recipe }: Props) {
                                             <span className="text-[14px] leading-relaxed text-stone-700 flex-1">
                                                 <span className="font-semibold text-stone-900">{item.quantity}</span>
                                                 <span className="text-stone-400 mx-1.5">·</span>
+                                                <span className="font-semibold text-stone-900">
+                                                     {item.unit === 'unidade' ? 'de' : item.unit}  
+                                                </span>
+                                                <span className="text-stone-400 mx-1.5">·</span>
                                                 <span className="font-light">{item.name}</span>
                                             </span>
                                         </div>

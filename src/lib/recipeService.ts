@@ -35,6 +35,7 @@ export interface RecipeComment {
   userName: string
   userBio: string | null
   comment: string
+  rating: number
   createdAt: string
 }
 
@@ -162,6 +163,7 @@ export async function getRecipeComments(recipeId: string): Promise<RecipeComment
     userName: row.user?.name ?? "Anônimo",
     userBio: row.user?.bio ?? null,
     comment: row.comment ?? "",
+    rating: row.rating,
     createdAt: row.created_at,
   }))
 }
@@ -170,7 +172,8 @@ export async function getRecipeComments(recipeId: string): Promise<RecipeComment
 export async function createRecipeComment(
   recipeId: string,
   userId: string,
-  comment: string
+  comment: string,
+  rating: number
 ): Promise<RecipeComment> {
   const { data, error } = await supabase
     .from("recipe_ratings")
@@ -178,6 +181,7 @@ export async function createRecipeComment(
       recipe_id: recipeId,
       user_id: userId,
       comment: comment.trim(),
+      rating,
     })
     .select(`
       id,
@@ -199,6 +203,7 @@ export async function createRecipeComment(
     userName: row.user?.name ?? "Anônimo",
     userBio: row.user?.bio ?? null,
     comment: row.comment ?? "",
+    rating: row.rating,
     createdAt: row.created_at,
   }
 }
