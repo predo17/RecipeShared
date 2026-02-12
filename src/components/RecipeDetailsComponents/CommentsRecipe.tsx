@@ -5,8 +5,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { getRecipeComments, createRecipeComment, type RecipeComment } from "@/lib/recipeService";
-import { FormatCount, formatRelativeTime } from "@/utils/Counter";
+import { FormatCount, formatDate } from "@/utils/Counter";
 import { ArrowUp, HeartIcon, MessageCircleMoreIcon, Star } from "lucide-react";
+import { toast } from "sonner";
 
 interface CommentsRecipeProps {
   recipeId: string;
@@ -52,19 +53,16 @@ export default function CommentsRecipe({ recipeId }: CommentsRecipeProps) {
     const trimmed = commentText.trim();
     const star = selectRating;
     console.log(trimmed);
-    if (trimmed.length < 10) {
-      setError("O comentário precisa ter no mínimo 10 caracteres.");
-      return;
-    }
 
     setSubmitting(true);
     setError(null);
     try {
       const newComment = await createRecipeComment(recipeId, user.id, trimmed, star);
       setComments((prev) => [newComment, ...prev]);
+      setSelectRating(0);
       setCommentText("");
     } catch (e) {
-      setError("Não foi possível publicar o comentário. Tente novamente.");
+      toast.error("Não foi possível publicar o comentário. Tente novamente.");
       console.error(e);
     } finally {
       setSubmitting(false);
@@ -120,7 +118,6 @@ export default function CommentsRecipe({ recipeId }: CommentsRecipeProps) {
                   comments.map((comment, index) => (
                     <div
                       key={comment.id}
-                      className="group bg-white border border-stone-200 rounded-lg p-5 hover:shadow-md hover:border-stone-300 transition-all duration-300"
                       style={{
                         animation: `fadeIn 0.4s ease-out ${index * 0.08}s backwards`,
                       }}
@@ -143,21 +140,34 @@ export default function CommentsRecipe({ recipeId }: CommentsRecipeProps) {
                             </p>
                           )}
                         </div>
-
-                        <span className="text-[10px] text-stone-400 font-light tabular-nums whitespace-nowrap">
-                          {formatRelativeTime(comment.createdAt)}
-                        </span>
                       </div>
 
-                      <div className="border-l-2 border-stone-200 pl-4 group-hover:border-stone-400 transition-colors">
+                      <div className="flex items-center gap-2 mb-2 ml-4">
+                        {comment.rating && Array.from({ length: 5 }, (_, i) => i + 1).map((star) => (
+                          <Star
+                            key={star}
+                            size={14}
+                            strokeWidth={2}
+                            className={`${comment.rating >= star
+                              ? "text-amber-400 fill-amber-400"
+                              : "text-stone-200 fill-stone-200"
+                              }`}
+                          />
+                        ))}
+                        <div className="text-xs text-stone-400 font-midium tabular-nums whitespace-nowrap">
+                          {formatDate(comment.createdAt)}
+                        </div>
+
+                      </div>
+                      <div className="border-l-2 border-stone-400 pl-4 ">
                         <p
-                          className="raleway text-[15px] leading-[1.7] text-stone-700 font-light"
+                          className="raleway text-sm leading-[1.7] text-stone-600 font-medium"
                         >
                           {comment.comment}
                         </p>
                       </div>
                       {/* funcionalidades futuras */}
-                      <div className="mt-4 flex items-center gap-4 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                      <div className="mt-4 flex items-center gap-4">
                         <button className="text-[11px] text-stone-500 hover:text-stone-800 font-medium uppercase tracking-wider flex items-center gap-1.5 cursor-pointer">
                           <HeartIcon size={12} strokeWidth={3} />
                           Curtir
@@ -215,10 +225,6 @@ export default function CommentsRecipe({ recipeId }: CommentsRecipeProps) {
                   </div>
 
                   <form onSubmit={handleSubmit} className="space-y-4">
-                    {(error && comments.length > 0) && (
-                      <p className="text-sm text-red-600">{error}</p>
-                    )}
-
                     <div>
                       <label className="raleway text-[10px] font-semibold uppercase tracking-wider text-stone-600 mb-2 block">
                         Dê uma avaliação
