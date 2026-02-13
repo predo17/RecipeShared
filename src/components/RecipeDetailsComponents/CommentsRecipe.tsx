@@ -123,7 +123,7 @@ export default function CommentsRecipe({ recipeId }: CommentsRecipeProps) {
                       }}
                     >
                       <div className="flex items-start gap-4 mb-4">
-                        <Avatar className="w-12 h-12 border-2 border-primary shadow-sm">
+                        <Avatar className="w-12 h-12">
                           <AvatarImage src={comment.avatar ?? undefined} alt={comment.userName} className="object-cover" />
                           <AvatarFallback className="bg-linear-to-br from-stone-200 to-stone-100 text-stone-700 font-semibold">
                             {comment.userName.substring(0, 2).toUpperCase()}
@@ -131,7 +131,7 @@ export default function CommentsRecipe({ recipeId }: CommentsRecipeProps) {
                         </Avatar>
 
                         <div className="flex-1 min-w-0">
-                          <h4 className="inter font-bold text-stone-900 text-base leading-tight">
+                          <h4 className="inter font-bold text-stone-900 text-sm sm:text-base leading-tight line-clamp-2">
                             {comment.userName}
                           </h4>
                           {comment.userBio && (
@@ -205,7 +205,7 @@ export default function CommentsRecipe({ recipeId }: CommentsRecipeProps) {
               {currentUser ? (
                 <>
                   <div className="flex items-start gap-4 mb-6 pb-6 border-b border-stone-200">
-                    <Avatar className="w-14 h-14 border-2 border-primary">
+                    <Avatar className="w-14 h-14">
                       <AvatarImage src={currentUser.avatar || undefined} alt={currentUser.name} className="object-cover" />
                       <AvatarFallback className="bg-linear-to-br from-amber-200 to-amber-100 text-amber-800 font-bold text-lg">
                         {currentUser.name.substring(0, 2).toUpperCase()}
@@ -213,7 +213,7 @@ export default function CommentsRecipe({ recipeId }: CommentsRecipeProps) {
                     </Avatar>
 
                     <div className="flex-1 min-w-0">
-                      <h4 className="inter font-bold text-stone-900 text-base leading-tight">
+                      <h4 className="inter font-bold text-stone-900 text-base leading-tight line-clamp-2">
                         {currentUser.name}
                       </h4>
                       {currentUser.bio && (
@@ -269,13 +269,13 @@ export default function CommentsRecipe({ recipeId }: CommentsRecipeProps) {
 
                     <Button
                       type="submit"
-                      disabled={submitting || commentText.trim().length < 10}
+                      disabled={submitting || commentText.trim().length < 10 || !selectRating}
                       className="text-white font-semibold uppercase tracking-wider text-sm py-2 shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
                     >
                       <ArrowUp className={`w-5 h-5 ${submitting ? "hidden" : ""}`} />
                       {submitting && (
                         <span className="flex items-center justify-center w-5.5 h-5.5">
-                          <span className="w-4.5 h-4.5 border-2 border-primary bottom-t-transparent rounded-full animate-spin"></span>
+                          <span className="w-4.5 h-4.5 border-2 border-orange-400 bottom-t-transparent rounded-full animate-spin"></span>
                         </span>
                       )}
                     </Button>
