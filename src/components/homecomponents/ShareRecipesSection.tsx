@@ -5,7 +5,7 @@ export default function ShareRecipesSection() {
     <section className="relative w-full py-16 px-4 bg-linear-to-br from-neutral-50 via-orange-50/30 to-amber-50/40">
       
       {/* Container da imagem */}
-      <div className="relative w-full max-w-6xl mx-auto rounded-2xl overflow-hidden">
+      <div className="relative container mx-auto rounded-2xl overflow-hidden">
         
         {/* Imagem */}
         <img

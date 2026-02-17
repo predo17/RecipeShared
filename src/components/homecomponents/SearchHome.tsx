@@ -1,7 +1,6 @@
-
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Search } from "lucide-react"
+import { ChevronRight, Search, TrendingUp } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Link } from "react-router-dom"
 import type { Recipe } from "@/lib/recipe"
@@ -23,59 +22,143 @@ export default function SearchHome() {
         fetchRecipes()
     }, [])
 
+    // Extrair categorias únicas
+    const uniqueCategories = Array.from(
+        new Set(recipes.map(r => r.category).filter(Boolean))
+    ).slice(0, 6)
+
     return (
-        <section className="container mx-auto px-4 md:px-8 lg:px-12 py-12">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 bg-white/60 backdrop-blur-xl border border-orange-100 rounded-3xl p-8 shadow-lg">
+        <section className="container mx-auto px-4 md:px-8 lg:px-12 py-16">
+            {/* Container principal */}
+            <div className="relative bg-linear-to-b from-stone-50 to-white overflow-hidden">
+                {/* Ornamento superior */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
 
-                <form className="space-y-4">
-                    <div>
-                        <h2 className="inter text-xl sm:text-2xl font-bold text-neutral-900 mb-1">
-                            O que você quer cozinhar hoje?
-                        </h2>
-                        <p className="raleway text-neutral-600 text-sm">
-                            Encontre receitas por nome, ingrediente ou categoria
-                        </p>
+                    {/* Coluna de busca */}
+                    <div className="lg:col-span-7 p-8 lg:p-12 border-b lg:border-b-0 lg:border-r border-stone-200">
+                        <form className="space-y-6">
+                            {/* Header */}
+                            <div className="space-y-3">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="w-10 h-10 bg-white border border-stone-300 rounded-lg flex items-center justify-center shadow-sm">
+                                        <Search className="w-5 h-5 text-stone-600" />
+                                    </div>
+                                    <div className="h-px flex-1 bg-stone-200"></div>
+                                </div>
+
+                                <h2 className="inter text-3xl font-serif leading-tight text-stone-900 tracking-tight">
+                                    O que você quer cozinhar hoje?
+                                </h2>
+
+                                <p className="raleway text-stone-600 leading-relaxed font-medium">
+                                    Encontre receitas por nome, ingrediente ou categoria
+                                </p>
+                            </div>
+
+                            {/* Campo de busca refinado */}
+                            <div className="relative group">
+                                <div className="absolute inset-0 bg-linear-to-r from-stone-300 to-stone-200 rounded-sm opacity-0 group-hover:opacity-100 blur transition-opacity duration-300"></div>
+
+                                <div className="relative flex items-center bg-white border-2 border-stone-300 focus-within:border-orange-400 transition-all duration-300 shadow-sm hover:shadow-md">
+                                    <Input
+                                        type="text"
+                                        placeholder="Ex: lasanha, bolo de chocolate, pizza margherita..."
+                                        className="border-0 bg-transparent h-14 px-5 text-sm  md:text-base focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-stone-400"
+                                        required
+                                    />
+
+                                    <Button
+                                        type="submit"
+                                        className="h-10 w-10 rounded-xs shadow-none border-l-2 mr-1 group-hover:scale-105"
+                                    >
+                                        <Search className="h-4 w-4 text-white" />
+                                    </Button>
+                                </div>
+                            </div>
+
+                            {/* Dicas de busca */}
+                            <div className="pt-2">
+                                <p className="text-[10px] uppercase tracking-[0.15em] text-stone-400 font-semibold mb-3">
+                                    Sugestões de busca
+                                </p>
+                                <div className="flex flex-wrap gap-2">
+                                    {/* Essa parte irar ser melhorada futuramente */}
+                                    {["Massas", "Sobremesas", "Vegano", "Rápido"].map((tag, index) => (
+                                        <button
+                                            key={index}
+                                            type="button"
+                                            className="text-xs px-3 py-1.5 border border-stone-300 text-stone-600 hover:bg-stone-100 hover:border-stone-400 transition-all duration-200 font-medium"
+                                            style={{
+                                                animation: `fadeIn 0.4s ease-out ${index * 0.1}s backwards`
+                                            }}
+                                        >
+                                            {tag}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </form>
                     </div>
 
-                    <div className="relative flex items-center">
-                        <Input
-                            type="text"
-                            placeholder="Ex: lasanha, bolo, pizza..."
-                            className="rounded-full pr-14  bg-white/80 focus-visible:ring-orange-400"
-                            required
-                        />
+                    {/* Coluna de categorias populares */}
+                    <div className="lg:col-span-5 p-8 lg:p-12 bg-linear-to-br from-stone-50 to-transparent">
+                        <div className="space-y-6">
+                            {/* Header */}
+                            <div>
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="w-10 h-10 bg-white border border-stone-300 rounded-lg flex items-center justify-center shadow-sm">
+                                        <TrendingUp className="w-5 h-5 text-amber-600" />
+                                    </div>
+                                    <div className="h-px flex-1 bg-stone-200"></div>
+                                </div>
 
-                        <Button
-                            type="submit"
-                            className="absolute right-0 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-orange-500 hover:bg-orange-600  shadow-md hover:shadow-lg transition-all"
-                        >
-                            <Search className="h-4 w-4 text-white" />
-                        </Button>
+                                <h3 className="inter text-xl text-stone-900 leading-tight tracking-tight mb-2">
+                                    Categorias Populares
+                                </h3>
+
+                                <p className="text-xs text-stone-500 leading-relaxed">
+                                    Explore as categorias mais buscadas
+                                </p>
+                            </div>
+
+                            {/* Lista de categorias */}
+                            <ul className="space-y-3">
+                                {uniqueCategories.length > 0 ? (
+                                    uniqueCategories.map((category, index) => (
+                                        <li
+                                            key={index}>
+                                            <Link
+                                                to={`/recipes/${category}`}
+                                                className="group flex items-center justify-between p-3 bg-white border border-stone-200 hover:border-stone-400 hover:shadow-md transition-all duration-300"
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 bg-stone-100 border border-stone-200 flex items-center justify-center group-hover:bg-orange-600 group-focus:bg-orange-600 transition-colors duration-300">
+                                                        <span className="text-xs font-mono text-stone-600 group-hover:text-white  group-focus-within:text-white tabular-nums">
+                                                            {String(index + 1).padStart(2, '0')}
+                                                        </span>
+                                                    </div>
+                                                    <span className="inter text-sm font-medium text-stone-700 group-hover:text-stone-900 transition-colors">
+                                                        {category}
+                                                    </span>
+                                                </div>
+
+                                               <ChevronRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 group-hover:translate-x-1 group-focus-within:text-stone-600 group-focus:translate-x-1 transition-all duration-300" />
+                                            </Link>
+                                        </li>
+                                    ))
+                                ) : (
+                                    <li className="text-center py-8">
+                                        <p className="text-sm text-stone-400">Carregando categorias...</p>
+                                    </li>
+                                )}
+                            </ul>
+                        </div>
                     </div>
 
-                </form>
-
-                <div className="space-y-4">
-                    <h2 className="inter text-2xl font-bold text-neutral-900">
-                        Pratos Populares
-                    </h2>
-
-                    <ul className="flex flex-wrap gap-3">
-                        {recipes.slice(0, 5).map((recipe) => (
-                            <li key={recipe.id}>
-                                <Link
-                                    to={`/recipes/${recipe.category}`}
-                                    className="inline-flex items-center px-5 py-2 rounded-full text-sm font-medium raleway
-                  bg-white/70 backdrop-blur border border-orange-100 text-neutral-700 hover:border-orange-300 transition-all duration-300 shadow-sm hover:shadow-md"
-                                >
-                                    {recipe.category}
-                                </Link>
-                            </li>
-                        ))}
-                    </ul>
                 </div>
 
             </div>
+
         </section>
     )
 }
