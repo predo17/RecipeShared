@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+ import { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
 import 'swiper/css';
@@ -32,12 +32,16 @@ export default function RecipesHome() {
     return (
         <section className="container mx-auto px-4 py-8 md:px-8 ">
             <div className="mb-10">
-                <h2 className="inter text-xl sm:text-2xl font-bold text-neutral-900 mb-1">
-                    Receitas em destaque
-                </h2>
-                <p className="raleway text-neutral-600 text-sm max-w-2xl">
-                    Descubra receitas inspiradoras e deliciosas para todos os momentos.
-                </p>
+                <div className="max-w-3xl">
+                    <h2 className="inter text-3xl lg:text-4xl font-medium leading-tight text-stone-900 tracking-tight mb-3">
+                        Receitas em Destaque
+                    </h2>
+                    <p className="raleway text-stone-600 leading-relaxed font-medium">
+                         Descubra receitas inspiradoras e deliciosas para todos os momentos.
+                    </p>
+                </div>
+
+                <div className="h-px w-16 bg-stone-300 mt-6" />
             </div>
 
             <Swiper

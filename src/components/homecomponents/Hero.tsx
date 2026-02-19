@@ -30,7 +30,7 @@ export default function Hero() {
 
                         <div className="space-y-6">
                             <h1
-                                className="inter text-5xl lg:text-7xl font-serif leading-[1.05] text-stone-900 tracking-tight max-w-145"
+                                className="inter text-5xl lg:text-7xl leading-[1.05] text-stone-900 tracking-tight max-w-145"
                             >
                                 Sabor que{" "}
                                 <span className="italic">

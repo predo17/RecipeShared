@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
-import { ChevronRight, Search, TrendingUp } from "lucide-react"
+import { Search, TrendingUp } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Link } from "react-router-dom"
 import type { Recipe } from "@/lib/recipe"
@@ -28,9 +28,9 @@ export default function SearchHome() {
     ).slice(0, 6)
 
     return (
-        <section className="container mx-auto px-4 md:px-8 lg:px-12 py-16">
+        <section className="container mx-auto px-4 md:px-8 py-16">
             {/* Container principal */}
-            <div className="relative bg-linear-to-b from-stone-50 to-white overflow-hidden">
+            <div className="relative bg-linear-to-b from-stone-100 to-white overflow-hidden rounded-sm">
                 {/* Ornamento superior */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
 
@@ -43,10 +43,10 @@ export default function SearchHome() {
                                     <div className="w-10 h-10 bg-white border border-stone-300 rounded-lg flex items-center justify-center shadow-sm">
                                         <Search className="w-5 h-5 text-stone-600" />
                                     </div>
-                                    <div className="h-px flex-1 bg-stone-200"></div>
+                                    <div className="flex-1 h-px bg-linear-to-r from-stone-300 to-transparent"></div>
                                 </div>
 
-                                <h2 className="inter text-3xl font-serif leading-tight text-stone-900 tracking-tight">
+                                <h2 className="inter text-3xl font-medium leading-tight text-stone-900 tracking-tight">
                                     O que você quer cozinhar hoje?
                                 </h2>
 
@@ -59,17 +59,17 @@ export default function SearchHome() {
                             <div className="relative group">
                                 <div className="absolute inset-0 bg-linear-to-r from-stone-300 to-stone-200 rounded-sm opacity-0 group-hover:opacity-100 blur transition-opacity duration-300"></div>
 
-                                <div className="relative flex items-center bg-white border-2 border-stone-300 focus-within:border-orange-400 transition-all duration-300 shadow-sm hover:shadow-md">
+                                <div className="relative flex items-center bg-white border-2 border-stone-300 focus-within:border-orange-400 transition-all duration-300 shadow-sm hover:shadow-md rounded-sm">
                                     <Input
                                         type="text"
                                         placeholder="Ex: lasanha, bolo de chocolate, pizza margherita..."
-                                        className="border-0 bg-transparent h-14 px-5 text-sm  md:text-base focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-stone-400"
+                                        className="raleway border-0 bg-transparent h-14 px-5 text-sm focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-stone-400"
                                         required
                                     />
 
                                     <Button
                                         type="submit"
-                                        className="h-10 w-10 rounded-xs shadow-none border-l-2 mr-1 group-hover:scale-105"
+                                        className="h-10 w-12 rounded-sm shadow-none border-l-2 mr-1 group-hover:scale-105 group-focus:scale-105"
                                     >
                                         <Search className="h-4 w-4 text-white" />
                                     </Button>
@@ -78,7 +78,7 @@ export default function SearchHome() {
 
                             {/* Dicas de busca */}
                             <div className="pt-2">
-                                <p className="text-[10px] uppercase tracking-[0.15em] text-stone-400 font-semibold mb-3">
+                                <p className="inter text-[10px] uppercase tracking-[0.15em] text-stone-500/80 font-semibold mb-3">
                                     Sugestões de busca
                                 </p>
                                 <div className="flex flex-wrap gap-2">
@@ -87,7 +87,7 @@ export default function SearchHome() {
                                         <button
                                             key={index}
                                             type="button"
-                                            className="text-xs px-3 py-1.5 border border-stone-300 text-stone-600 hover:bg-stone-100 hover:border-stone-400 transition-all duration-200 font-medium"
+                                            className="text-xs px-3 py-1.5 border border-stone-300 text-stone-600 hover:bg-stone-100 hover:border-stone-400 transition-all duration-200 font-medium rounded-sm"
                                             style={{
                                                 animation: `fadeIn 0.4s ease-out ${index * 0.1}s backwards`
                                             }}
@@ -101,7 +101,7 @@ export default function SearchHome() {
                     </div>
 
                     {/* Coluna de categorias populares */}
-                    <div className="lg:col-span-5 p-8 lg:p-12 bg-linear-to-br from-stone-50 to-transparent">
+                    <div className="lg:col-span-5 p-8 lg:p-12">
                         <div className="space-y-6">
                             {/* Header */}
                             <div>
@@ -109,40 +109,31 @@ export default function SearchHome() {
                                     <div className="w-10 h-10 bg-white border border-stone-300 rounded-lg flex items-center justify-center shadow-sm">
                                         <TrendingUp className="w-5 h-5 text-amber-600" />
                                     </div>
-                                    <div className="h-px flex-1 bg-stone-200"></div>
+                                    <div className="flex-1 h-px bg-linear-to-r from-stone-300 to-transparent"></div>
                                 </div>
 
-                                <h3 className="inter text-xl text-stone-900 leading-tight tracking-tight mb-2">
+                                <h3 className="inter text-xl sm:text-2xl text-stone-900 leading-tight tracking-tight font-medium mb-2">
                                     Categorias Populares
                                 </h3>
 
-                                <p className="text-xs text-stone-500 leading-relaxed">
+                                <p className="text-xs sm:text-sm text-stone-500/90 leading-relaxed font-medium">
                                     Explore as categorias mais buscadas
                                 </p>
                             </div>
 
                             {/* Lista de categorias */}
-                            <ul className="space-y-3">
+                            <ul className="flex flex-wrap gap-2">
                                 {uniqueCategories.length > 0 ? (
                                     uniqueCategories.map((category, index) => (
                                         <li
                                             key={index}>
                                             <Link
                                                 to={`/recipes/${category}`}
-                                                className="group flex items-center justify-between p-3 bg-white border border-stone-200 hover:border-stone-400 hover:shadow-md transition-all duration-300"
+                                                className="group flex p-3 bg-white border border-stone-200 hover:border-orange-400 hover:shadow-md focus:shadow-md transition-all duration-300 rounded-sm"
                                             >
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 bg-stone-100 border border-stone-200 flex items-center justify-center group-hover:bg-orange-600 group-focus:bg-orange-600 transition-colors duration-300">
-                                                        <span className="text-xs font-mono text-stone-600 group-hover:text-white  group-focus-within:text-white tabular-nums">
-                                                            {String(index + 1).padStart(2, '0')}
-                                                        </span>
-                                                    </div>
-                                                    <span className="inter text-sm font-medium text-stone-700 group-hover:text-stone-900 transition-colors">
-                                                        {category}
-                                                    </span>
-                                                </div>
-
-                                               <ChevronRight className="w-4 h-4 text-stone-400 group-hover:text-stone-600 group-hover:translate-x-1 group-focus-within:text-stone-600 group-focus:translate-x-1 transition-all duration-300" />
+                                                <span className="inter text-sm font-medium text-stone-700 group-hover:text-stone-900 transition-colors">
+                                                    {category}
+                                                </span>
                                             </Link>
                                         </li>
                                     ))
