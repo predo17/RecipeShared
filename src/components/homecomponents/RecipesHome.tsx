@@ -4,7 +4,7 @@ import { Autoplay, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 
-import { RecipesSkeleton } from '@/components/RecipesSkeleton';
+import { RecipesSkeleton } from '@/components/skeleton/RecipesSkeleton';
 import { RecipeCard } from '@/components/RecipeCard';
 import type { Recipe } from '@/lib/recipe';
 import { getAllRecipes } from '@/lib/recipeService';
@@ -33,7 +33,7 @@ export default function RecipesHome() {
         <section className="container mx-auto px-4 py-8 md:px-8 ">
             <div className="mb-10">
                 <div className="max-w-3xl">
-                    <h2 className="inter text-3xl lg:text-4xl font-medium leading-tight text-stone-900 tracking-tight mb-3">
+                    <h2 className="inter text-2xl sm:text-3xl lg:text-4xl font-medium leading-tight text-stone-900 tracking-tight mb-3">
                         Receitas em Destaque
                     </h2>
                     <p className="raleway text-stone-600 leading-relaxed font-medium">

@@ -9,7 +9,7 @@ interface Props {
 
 export default function RecipeFormActions({ loading, isEditMode, onCancel }: Props) {
     return (
-        <div className="sticky bottom-0 bg-linear-to-t from-white via-white to-transparent pt-6 pb-4 -mx-4 px-4 z-50">
+        <div className="sticky bottom-0 bg-linear-to-t from-white via-white to-transparent pt-6 pb-4 -mx-4 px-4 z-40">
             <div className="flex gap-4 justify-end max-w-5xl mx-auto">
                 <Button
                     type="button"

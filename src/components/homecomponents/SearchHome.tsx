@@ -46,11 +46,11 @@ export default function SearchHome() {
                                     <div className="flex-1 h-px bg-linear-to-r from-stone-300 to-transparent"></div>
                                 </div>
 
-                                <h2 className="inter text-3xl font-medium leading-tight text-stone-900 tracking-tight">
+                                <h2 className="inter text-2xl sm:text-3xl font-medium leading-tight text-stone-900 tracking-tight">
                                     O que você quer cozinhar hoje?
                                 </h2>
 
-                                <p className="raleway text-stone-600 leading-relaxed font-medium">
+                                <p className="raleway text-xs sm:text-sm text-stone-600 leading-relaxed font-medium">
                                     Encontre receitas por nome, ingrediente ou categoria
                                 </p>
                             </div>
@@ -63,13 +63,13 @@ export default function SearchHome() {
                                     <Input
                                         type="text"
                                         placeholder="Ex: lasanha, bolo de chocolate, pizza margherita..."
-                                        className="raleway border-0 bg-transparent h-14 px-5 text-sm focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-stone-400"
+                                        className="raleway border-0 bg-transparent h-12 sm:h-14 px-2.5 sm:px-5 text-sm focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-stone-400"
                                         required
                                     />
 
                                     <Button
                                         type="submit"
-                                        className="h-10 w-12 rounded-sm shadow-none border-l-2 mr-1 group-hover:scale-105 group-focus:scale-105"
+                                        className="sm:h-10 sm:w-12 rounded-sm shadow-none border-l-2 mr-1 group-hover:scale-105 group-focus:scale-105"
                                     >
                                         <Search className="h-4 w-4 text-white" />
                                     </Button>
@@ -116,7 +116,7 @@ export default function SearchHome() {
                                     Categorias Populares
                                 </h3>
 
-                                <p className="text-xs sm:text-sm text-stone-500/90 leading-relaxed font-medium">
+                                <p className="raleway text-xs text-stone-600 leading-relaxed font-medium">
                                     Explore as categorias mais buscadas
                                 </p>
                             </div>

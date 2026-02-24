@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react"
 import type { Recipe } from "@/lib/recipe"
 import { getRecipesByCategory } from "@/lib/recipeService"
-import { RecipesSkeleton } from "@/components/RecipesSkeleton"
+import { RecipesSkeleton } from "@/components/skeleton/RecipesSkeleton"
 import { RecipeCard } from "@/components/RecipeCard"
 
 interface Props {

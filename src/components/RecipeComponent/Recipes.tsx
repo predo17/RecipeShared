@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { RecipesSkeleton } from "@/components/RecipesSkeleton";
+import { RecipesSkeleton } from "@/components/skeleton/RecipesSkeleton";
 import { RecipeCard } from "@/components/RecipeCard";
 import { getAllRecipes } from "@/lib/recipeService";
 import type { Recipe } from "@/lib/recipe";

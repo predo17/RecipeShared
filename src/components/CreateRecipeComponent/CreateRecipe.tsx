@@ -2,13 +2,12 @@ import { useEffect, useRef, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import type { Recipe } from "@/lib/recipe"
 import { createRecipe, updateRecipe, uploadRecipeImage, type CreateRecipeData, type UpdateRecipeData } from "@/lib/recipeService"
-import { Button } from "@/components/ui/button"
 import { useAuth } from "@/contexts/AuthContext"
 import RecipeBasicInfo from "./RecipeBasicInfo"
 import RecipeImagePicker from "./RecipeImagePicker"
 import RecipeIngredients from "./RecipeIngredients"
 import RecipeSteps from "./RecipeSteps"
-import { ArrowLeft, ChefHat,  } from "lucide-react"
+import { ChefHat,  } from "lucide-react"
 import RecipeFormActions from "./RecipeFormActions"
 import { toast } from "sonner"
 
@@ -258,18 +257,9 @@ export default function CreateRecipe() {
       <div className="container mx-auto px-4 py-8 max-w-5xl">
         {/* Header */}
         <div className="mb-10">
-          <Button
-            variant="ghost"
-            onClick={() => navigate("/recipes")}
-            className="mb-6 hover:bg-stone-100 transition-colors group"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-            Voltar para receitas
-          </Button>
-
           <div className="flex items-center gap-4 mb-4">
             <div className="w-14 h-14 bg-linear-to-br from-stone-800 to-stone-600 rounded-2xl flex items-center justify-center shadow-lg shrink-0">
-              <ChefHat className="w-7 h-7 text-white" />
+              <ChefHat className="w-7 h-7 text-orange-400" />
             </div>
             <div>
               <h1 className="inter text-2xl md:text-4xl font-bold text-stone-900 tracking-tight">

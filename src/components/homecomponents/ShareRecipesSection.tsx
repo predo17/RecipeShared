@@ -38,7 +38,7 @@ export default function ShareRecipesSection() {
                 </h2>
 
                 {/* Descrição */}
-                <p className="raleway text-sm md:text-base lg:text-lg text-white/90 leading-[1.8] font-medium ">
+                <p className="raleway text-sm md:text-base lg:text-lg text-white/90 leading-[1.8] font-medium px-2">
                   Mostre ao mundo aquele prato especial que todo mundo elogia.
                   Crie, compartilhe e inspire outras pessoas na cozinha.
                 </p>

@@ -42,7 +42,7 @@ export default function Hero() {
                             <div className="h-px w-20 bg-stone-400 my-6"></div>
 
                             <p
-                                className="releway text-[17px] lg:text-[19px] text-stone-700 leading-[1.8] max-w-xl font-midium"
+                                className="releway text-[17px] lg:text-[19px] text-stone-700 leading-[1.8] max-w-xl"
                             >
                                 Descubra receitas autênticas, compartilhe suas criações e faça parte de uma comunidade apaixonada pela arte de cozinhar.
                             </p>

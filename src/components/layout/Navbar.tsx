@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
-import { ChefHat, Plus, User, Menu, Search, Home, Salad } from "lucide-react"
+import { ChefHat, Menu, Search, X } from "lucide-react"
 import { useAuth } from "@/contexts/AuthContext"
 import { Button } from "@/components/ui/button"
 import {
@@ -10,158 +10,173 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Input } from "@/components/ui/input"
+import { linksNavigate } from "@/constants/navigaion"
+import { useUI } from "@/contexts/AuthModalContext"
 
 export default function Navbar() {
-  const { user } = useAuth()
-  const [showSearch, setShowSearch] = useState(false)
+  const { user } = useAuth();
+  const [showSearch, setShowSearch] = useState(false);
+  const { openAuth } = useUI();
 
   return (
-    <nav className="relative border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
-      <div className="container mx-auto px-2">
-        <div className="flex h-14 items-center justify-between">
+    <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-sm">
 
-          {/* Mobile - Menu */}
-          <div className="flex md:hidden">
+      <div className="container mx-auto px-4">
+        <div className="flex h-16 items-center justify-between">
+
+          {/* Mobile - Menu Hamburger */}
+          <div className="flex lg:hidden">
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" onClick={() => setShowSearch(false)}>
-                  <Menu className="h-6 w-6" />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowSearch(false)}
+                  className="hover:bg-stone-100 transition-colors"
+                >
+                  <Menu className="h-5 w-5 text-stone-700" />
                 </Button>
               </SheetTrigger>
 
-              <SheetContent side="left" className="flex flex-col gap-4 py-4 px-2">
-                <div
-                  className="flex items-center gap-2 font-semibold -mt-0.5"
-                >
-                  <ChefHat className="h-6 w-6 text-primary" />
-                  <span>RecipeShared</span>
+              <SheetContent side="left" className="w-80 bg-linear-to-b from-stone-50 to-white border-r-2 border-stone-200">
+                {/* Header do menu mobile */}
+                <div className="flex items-center gap-2 p-2.5 border-b-2 border-stone-200">
+                  <div className="w-9 h-9 lg:w-10 lg:h-10 bg-linear-to-br from-stone-800 to-stone-600 rounded-lg flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300 group-hover:scale-105">
+                    <ChefHat className="h-5 lg:h-5 lg:w-5 text-orange-400" />
+                  </div>
+                  <span className="inter text-lg lg:text-xl font-semibold text-stone-900 tracking-tight">
+                    RecipeShared
+                  </span>
                 </div>
 
-                <SheetClose asChild>
-                  <Link to="/" aria-label="início" className="flex items-center gap-2 px-1">
-                    <Home className="h-4 w-4" />
-                    Início
-                  </Link>
-                </SheetClose>
-                <SheetClose asChild>
-                  <Link to="/recipes" aria-label="Receitas" className="flex items-center gap-2 px-1">
-                    <Salad className="h-4 w-4" />
-                    Receitas
-                  </Link>
-                </SheetClose>
+                {/* Links do menu mobile */}
+                <nav className="space-y-2">
 
-                <SheetClose asChild>
-                  <Link to="/create-recipe" aria-label="Criar Receita" className="flex items-center gap-2 px-1">
-                    <Plus className="h-4 w-4" />
-                    Criar Receita
-                  </Link>
-                </SheetClose>
-                <SheetClose asChild>
+                  {linksNavigate.map((link) => {
 
-                  {user ? (
-                    <Link
-                      to="/profile"
-                      className="flex items-center gap-1.5"
-                      arial-label="Perfil"
-                    >
-                      <User className="h-4 w-4" />
-                      Perfil
-                    </Link>
-                  ) : (
-                    <Link
-                      to="/register"
-                      className="p-2 text-sm font-semibold bg-orange-500 hover:bg-orange-600 text-white rounded-sm text-center"
-                      arial-label="Criar Conta"
-                    >
-                      Criar Conta
-                    </Link>
-                  )}
-                </SheetClose>
+                    if (link.href === "/profile" && !user) {
+                      return (
+                        <SheetClose asChild>
+                          <Button
+                            key="register"
+                            onClick={() => openAuth("register")}
+                            aria-label="Criar Conta"
+                            className="flex items-center justify-center gap-2 px-6 py-2.5  bg-linear-to-r from-orange-500 to-orange-400 text-white focus:from-orange-600 focus:to-orange-500 font-semibold rounded-xs shadow-md hover:shadow-lg transition-all duration-300"
+                          >
+                            <span className="text-xs uppercase tracking-wider">
+                              Criar Conta
+                            </span>
+                          </Button>
+                        </SheetClose>
+                      )
+                    }
+
+                    return (
+                      <SheetClose asChild>
+                        <Link
+                          key={link.href}
+                          to={link.href}
+                          aria-label={link.name}
+                          className="group flex items-center gap-2 px-4 py-2 focus:bg-stone-100 focus:outline-0 border-l-2 border-transparent focus:border-stone-800 transition-all duration-200 relative"
+                        >
+                          <link.icon className="h-4 w-4 text-stone-600 group-hover:text-stone-900 group-focus:text-stone-900 transition-colors" />
+
+                          <span className="text-sm font-medium text-stone-700 group-hover:text-stone-900 group-focus:text-stone-900 transition-colors">
+                            {link.name}
+                          </span>
+                        </Link>
+                      </SheetClose>
+                    )
+                  })}
+                </nav>
               </SheetContent>
             </Sheet>
           </div>
 
-          {/* Logo */}
+          {/* Logo - Centralizado mobile, esquerda desktop */}
           <Link
             to="/"
             onClick={() => setShowSearch(false)}
-            className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 flex items-center gap-2 font-semibold px-2 py-1"
+            className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 group flex items-center gap-2 py-2"
           >
-            <ChefHat className="h-6 w-6 text-primary" />
-            <span>RecipeShared</span>
+            <div className="w-9 h-9 lg:w-10 lg:h-10 bg-linear-to-br from-stone-800 to-stone-600 rounded-lg flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300 group-hover:scale-105">
+              <ChefHat className="h-5 w-5 text-orange-400" />
+            </div>
+            <span className="hidden sm:block inter text-lg lg:text-xl font-semibold tracking-tight">
+              RecipeShared
+            </span>
           </Link>
 
           {/* Desktop menu */}
-          <div className="hidden md:flex items-center gap-2">
-            <Link to="/"
-              arial-label="início"
-              className="flex items-center gap-1.5 px-2 py-1.5 hover:bg-accent rounded-full"
-            >
-              <Home className="h-4 w-4 mt-0.5" />
-              Início
-            </Link>
+          <div className="hidden lg:flex items-center gap-1 lg:gap-2">
+            {linksNavigate.map((link) => {
 
-            <Link
-              to="/recipes"
-              arial-label="Receitas"
-              className="flex items-center gap-2 px-2 py-1.5 hover:bg-accent rounded-full"
-              >
-              <Salad className="h-4 w-4 mt-0.5" />
-              Receitas
-            </Link>
+              if (link.href === "/profile" && !user) {
+                return (
+                  <Button
+                    key="register"
+                    onClick={() => openAuth("register")}
+                    aria-label="Criar Conta"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 bg-linear-to-r from-orange-500 to-orange-400 text-white hover:from-orange-600 hover:to-orange-500 font-semibold rounded-sm shadow-md hover:shadow-lg transition-all duration-300 hover:scale-102"
+                  >
+                    <span className="text-xs lg:text-sm uppercase tracking-wider">
+                      Criar Conta
+                    </span>
+                  </Button>
+                )
+              }
 
-            <Link
-              to="/create-recipe"
-              arial-label="Criar Receita"
-              className="flex items-center gap-1.5 px-2 py-1.5 hover:bg-accent rounded-full"
-              >
-              <Plus className="h-4 w-4 mt-0.5" />
-              Criar Receita
-            </Link>
-
-            {user ? (
-              <Link
-                to="/profile"
-                className="flex items-center gap-1.5 hover:bg-accent rounded-full"
-                arial-label="Perfil">
-                <User className="h-4 w-4" />
-                Perfil
-              </Link>
-            ) : (
-              <Link
-                to="/register"
-                className="p-2 text-sm font-semibold bg-orange-500 hover:bg-orange-600 text-white rounded-sm"
-                arial-label="Criar Conta"
+              return (
+                <Link
+                  key={link.href}
+                  to={link.href}
+                  aria-label={link.name}
+                  className="group flex items-center gap-2 px-4 py-2 hover:bg-stone-100 focus:bg-stone-100 focus:outline-0 transition-all duration-200 relative"
                 >
-                Criar Conta
-              </Link>
-            )}
+                  <link.icon className="h-4 w-4 text-stone-600 group-hover:text-stone-900 group-focus:text-stone-900 transition-colors" />
+
+                  <span className="raleway text-sm font-medium text-stone-700 group-hover:text-stone-900 group-focus:text-stone-900 transition-colors tracking-wider ">
+                    {link.name}
+                  </span>
+
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-stone-800 scale-x-0 group-hover:scale-x-100 group-focus-visible:scale-x-100 transition-transform duration-300 origin-left"></div>
+                </Link>
+              )
+            })}
           </div>
 
-          {/* Mobile - Search */}
-          <div className="flex md:hidden">
+          {/* Search Button */}
+          <div className="flex lg:hidden">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setShowSearch(prev => !prev)}
-              >
-              <Search className="h-5 w-5" />
+              className="hover:bg-stone-100 transition-colors"
+            >
+              {showSearch ? (
+                <X className="h-5 w-5 text-stone-700" />
+              ) : (
+                <Search className="h-5 w-5 text-stone-700" />
+              )}
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Search animado */}
+      {/* Search Bar */}
       <div
-        className={`overflow-hidden transition-all duration-500 ease-in-out
-          ${showSearch ? "max-h-20 opacity-100" : "max-h-0 opacity-0"}
+        className={`lg:hidden overflow-hidden transition-all duration-500 ease-in-out border-t border-stone-200
+          ${showSearch ? "max-h-24 opacity-100" : "max-h-0 opacity-0"}
         `}
       >
-        <form className="px-4 pb-3 mt-1">
-          <Input
-            placeholder="Buscar receitas..."
-            className="w-full bg-white/80 focus-visible:ring-orange-400"
-          />
+        <form className="px-4 py-4 bg-stone-50">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
+            <Input
+              placeholder="Buscar receitas, ingredientes..."
+              className="pl-10 border-stone-300 focus:border-stone-500 focus-visible:ring-stone-300 bg-white h-11"
+            />
+          </div>
         </form>
       </div>
     </nav>
