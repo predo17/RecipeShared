@@ -56,7 +56,10 @@ export async function getAllRecipes(): Promise<Recipe[]> {
           created_at
         ),
         ingredients:ingredients(*),
-        steps:steps(*)
+        steps:steps(*),
+        favorites:recipe_favorites(
+          user_id
+        )
       `)
       .order("created_at", { ascending: false })
 
@@ -87,7 +90,10 @@ export async function getRecipeById(id: string): Promise<Recipe | null> {
           created_at
         ),
         ingredients:ingredients(*),
-        steps:steps(*)
+        steps:steps(*),
+        favorites:recipe_favorites(
+          user_id
+        )
       `)
       .eq("id", id)
       .maybeSingle() // evita erro quando não existe
@@ -118,7 +124,10 @@ export async function getRecipesByCategory(category: string, excludeId?: string,
           created_at
         ),
         ingredients:ingredients(*),
-        steps:steps(*)
+        steps:steps(*),
+        favorites:recipe_favorites(
+          user_id
+        )
       `)
       .eq("category", category)
       .order("created_at", { ascending: false })
@@ -205,6 +214,72 @@ export async function createRecipeComment(
     comment: row.comment ?? "",
     rating: row.rating,
     createdAt: row.created_at,
+  }
+}
+
+// Buscar receitas favoritas do usuário logado
+export async function getUserFavoriteRecipes(userId: string): Promise<Recipe[]> {
+  try {
+    const { data, error } = await supabase
+      .from("recipe_favorites")
+      .select(`
+        recipe:recipes(
+          *,
+          author:users(id, name, email, avatar, bio),
+          ratings:recipe_ratings(
+            id,
+            user_id,
+            user:users(name),
+            rating,
+            comment,
+            created_at
+          ),
+          ingredients:ingredients(*),
+          steps:steps(*)
+        )
+      `)
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+
+    if (error) throw error
+
+    return (data || []).map((row: any) =>
+      transformRecipe({
+        ...(row as any).recipe,
+        favorites: [{ user_id: userId }],
+      })
+    )
+  } catch (error) {
+    console.error("Erro ao buscar favoritos:", error)
+    throw error
+  }
+}
+
+// Adicionar receita aos favoritos
+export async function addRecipeFavorite(recipeId: string, userId: string): Promise<void> {
+  const { error } = await supabase
+    .from("recipe_favorites")
+    .insert({
+      recipe_id: recipeId,
+      user_id: userId,
+    })
+
+  // Ignora erro de duplicidade (já favoritado)
+  if (error && (error as any).code !== "23505") {
+    throw error
+  }
+}
+
+// Remover receita dos favoritos
+export async function removeRecipeFavorite(recipeId: string, userId: string): Promise<void> {
+  const { error } = await supabase
+    .from("recipe_favorites")
+    .delete()
+    .eq("recipe_id", recipeId)
+    .eq("user_id", userId)
+
+  if (error) {
+    throw error
   }
 }
 
@@ -433,5 +508,6 @@ function transformRecipe(data: any): Recipe {
     averageRating: Math.round(averageRating * 10) / 10,
     createdAt: data.created_at,
     updatedAt: data.updated_at,
+    isFavorite: Array.isArray((data as any).favorites) && (data as any).favorites.length > 0,
   }
 }

@@ -17,6 +17,7 @@ export interface Recipe {
   averageRating: number;
   createdAt: string;
   updatedAt: string;
+  isFavorite?: boolean;
 }
 
 export interface Ingredient {

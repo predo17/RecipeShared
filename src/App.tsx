@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from "react-router-dom"
 
 import HomePage from "@/pages/HomePage"
 import ProfilePage from "@/pages/ProfilePage"
+import FavoritesPage from "@/pages/FavoritesPage"
 import Navbar from "@/components/layout/Navbar"
 import ProtectedRoute from "@/components/auth/ProtectedRoute"
 import CreateRecipePage from "@/pages/CreateRecipePage"
@@ -36,6 +37,14 @@ export default function App() {
         <Route path="/recipes" element={<RecipesPage />} />
         <Route path="/recipes/details/:title" element={<RecipesPageDetails />} />
         <Route path="/create-recipe" element={<CreateRecipePage />} />
+        <Route
+          path="/favorites"
+          element={
+            <ProtectedRoute>
+              <FavoritesPage />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/profile"
           element={

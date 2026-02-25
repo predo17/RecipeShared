@@ -8,7 +8,7 @@ export function RecipesSkeleton() {
             <Skeleton className="absolute inset-0" />
             {/* Categoria */}
             <div className="absolute top-4 left-4">
-                <Skeleton className="h-6 w-20 rounded-full bg-white/80" />
+                <Skeleton className="h-9 w-9 rounded-full bg-white/80" />
             </div>
 
             <div className="absolute top-4 right-4">

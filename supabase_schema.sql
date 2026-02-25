@@ -124,7 +124,25 @@ COMMENT ON TABLE public.recipe_ratings IS 'Avaliações das receitas';
 COMMENT ON COLUMN public.recipe_ratings.rating IS 'Avaliação de 1 a 5 estrelas';
 
 -- ============================================
--- 7. TRIGGERS: Atualizar updated_at automaticamente
+-- 7. TABELA: recipe_favorites (Favoritos)
+-- ============================================
+CREATE TABLE IF NOT EXISTS public.recipe_favorites (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    recipe_id UUID NOT NULL REFERENCES public.recipes(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    UNIQUE(recipe_id, user_id)
+);
+
+-- Índices para performance
+CREATE INDEX IF NOT EXISTS idx_recipe_favorites_recipe_id ON public.recipe_favorites(recipe_id);
+CREATE INDEX IF NOT EXISTS idx_recipe_favorites_user_id ON public.recipe_favorites(user_id);
+
+-- Comentários
+COMMENT ON TABLE public.recipe_favorites IS 'Receitas favoritas dos usuários';
+
+-- ============================================
+-- 8. TRIGGERS: Atualizar updated_at automaticamente
 -- ============================================
 -- Função para atualizar updated_at
 CREATE OR REPLACE FUNCTION public.handle_updated_at()
@@ -152,7 +170,7 @@ CREATE TRIGGER update_recipe_ratings_updated_at
     EXECUTE FUNCTION public.handle_updated_at();
 
 -- ============================================
--- 8. TRIGGER: Criar perfil automaticamente ao registrar usuário
+-- 9. TRIGGER: Criar perfil automaticamente ao registrar usuário
 -- ============================================
 -- Função para criar perfil quando usuário se registra
 CREATE OR REPLACE FUNCTION public.handle_new_user()
@@ -191,7 +209,7 @@ CREATE TRIGGER on_auth_user_created
     EXECUTE FUNCTION public.handle_new_user();
 
 -- ============================================
--- 9. ROW LEVEL SECURITY (RLS)
+-- 10. ROW LEVEL SECURITY (RLS)
 -- ============================================
 
 -- Habilitar RLS em todas as tabelas
@@ -200,6 +218,7 @@ ALTER TABLE public.recipes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.ingredients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.steps ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.recipe_ratings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.recipe_favorites ENABLE ROW LEVEL SECURITY;
 
 -- ============================================
 -- POLÍTICAS: users
@@ -332,6 +351,55 @@ CREATE POLICY "Usuários podem atualizar próprias avaliações"
 -- Usuários podem deletar apenas suas próprias avaliações
 CREATE POLICY "Usuários podem deletar próprias avaliações"
     ON public.recipe_ratings
+    FOR DELETE
+    USING (auth.uid() = user_id);
+
+-- ============================================
+-- POLÍTICAS: recipe_ratings
+-- ============================================
+-- Qualquer um pode ver avaliações
+CREATE POLICY "Qualquer um pode ver avaliações"
+    ON public.recipe_ratings
+    FOR SELECT
+    USING (true);
+
+-- Apenas usuários autenticados podem criar avaliações
+CREATE POLICY "Usuários autenticados podem criar avaliações"
+    ON public.recipe_ratings
+    FOR INSERT
+    WITH CHECK (auth.uid() IS NOT NULL AND auth.uid() = user_id);
+
+-- Usuários podem atualizar apenas suas próprias avaliações
+CREATE POLICY "Usuários podem atualizar próprias avaliações"
+    ON public.recipe_ratings
+    FOR UPDATE
+    USING (auth.uid() = user_id)
+    WITH CHECK (auth.uid() = user_id);
+
+-- Usuários podem deletar apenas suas próprias avaliações
+CREATE POLICY "Usuários podem deletar próprias avaliações"
+    ON public.recipe_ratings
+    FOR DELETE
+    USING (auth.uid() = user_id);
+
+-- ============================================
+-- POLÍTICAS: recipe_favorites
+-- ============================================
+-- Usuários autenticados podem ver apenas seus próprios favoritos
+CREATE POLICY "Usuários podem ver próprios favoritos"
+    ON public.recipe_favorites
+    FOR SELECT
+    USING (auth.uid() IS NOT NULL AND auth.uid() = user_id);
+
+-- Usuários autenticados podem adicionar favoritos
+CREATE POLICY "Usuários podem adicionar favoritos"
+    ON public.recipe_favorites
+    FOR INSERT
+    WITH CHECK (auth.uid() IS NOT NULL AND auth.uid() = user_id);
+
+-- Usuários podem remover apenas seus próprios favoritos
+CREATE POLICY "Usuários podem remover próprios favoritos"
+    ON public.recipe_favorites
     FOR DELETE
     USING (auth.uid() = user_id);
 

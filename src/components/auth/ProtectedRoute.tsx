@@ -26,10 +26,15 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   if (loading) return <PageLoader />
 
   if (!user) {
-    return <AuthModal
-      isOpen={isAuthOpen}
-      onClose={closeAuth}
-       />
+    return (
+      <>
+        <PageLoader />
+        <AuthModal
+          isOpen={isAuthOpen}
+          onClose={closeAuth}
+        />
+      </>
+    )
   }
 
   return <>{children}</>

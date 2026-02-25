@@ -1,7 +1,12 @@
 import type { Recipe, Step } from "@/lib/recipe"
 import StepsRecipes from "./StepsRecipes"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ChefHat } from "lucide-react"
+import { ChefHat, Heart } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { useAuth } from "@/contexts/AuthContext"
+import { useState } from "react"
+import { addRecipeFavorite, removeRecipeFavorite } from "@/lib/recipeService"
+import { toast } from "sonner"
 
 interface Props {
     recipe: Recipe
@@ -9,6 +14,31 @@ interface Props {
 }
 
 export default function PreviewRecipe({ recipe }: Props) {
+
+    const { user } = useAuth()
+    const [isFavorite, setIsFavorite] = useState<boolean>(Boolean(recipe.isFavorite))
+
+    const handleToggleFavorite = async () => {
+        if (!user) {
+            toast.error("Faça login para favoritar receitas.")
+            return
+        }
+
+        try {
+            if (isFavorite) {
+                await removeRecipeFavorite(recipe.id, user.id)
+                setIsFavorite(false)
+                toast.success("Receita removida dos favoritos.")
+            } else {
+                await addRecipeFavorite(recipe.id, user.id)
+                setIsFavorite(true)
+                toast.success("Receita adicionada aos favoritos.")
+            }
+        } catch (error) {
+            console.error("Erro ao atualizar favorito:", error)
+            toast.error("Não foi possível atualizar seus favoritos.")
+        }
+    }
 
     return (
         <section className="container mx-auto ">
@@ -121,7 +151,7 @@ export default function PreviewRecipe({ recipe }: Props) {
                                                 <span className="font-semibold text-stone-900">{item.quantity}</span>
                                                 <span className="text-stone-400 mx-1.5">·</span>
                                                 <span className="font-semibold text-stone-900">
-                                                     {item.unit === 'unidade' ? 'de' : item.unit}  
+                                                    {item.unit === 'unidade' ? 'de' : item.unit}
                                                 </span>
                                                 <span className="text-stone-400 mx-1.5">·</span>
                                                 <span className="font-light">{item.name}</span>
@@ -174,6 +204,20 @@ export default function PreviewRecipe({ recipe }: Props) {
                                             {recipe.author.bio}
                                         </p>
                                     </div>
+                                </div>
+
+                                <div className="flex flex-wrap items-center gap-3">
+                                    <Button
+                                        type="button"
+                                        variant={"outline"}
+                                        onClick={handleToggleFavorite}
+                                        className="flex items-center gap-2"
+                                    >
+                                        <Heart
+                                            className={`w-4 h-4 ${isFavorite ? "fill-red-500 text-red-500" : ""}`}
+                                        />
+                                        {isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+                                    </Button>
                                 </div>
 
                                 {/* Ornamento decorativo */}

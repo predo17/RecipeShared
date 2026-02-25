@@ -72,7 +72,7 @@ export default function Profile() {
   if (!user) return null
 
   return (
-    <div className="container mx-auto px-2 py-8 max-w-7xl">
+    <div className="container mx-auto px-4 py-8 max-w-7xl">
       <div className="flex items-center justify-between mb-8 sm:mb-10 lg:mb-14">
         <div className="space-y-3 sm:space-y-4 lg:space-y-5 max-w-2xl">
 
