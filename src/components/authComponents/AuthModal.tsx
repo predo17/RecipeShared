@@ -4,7 +4,6 @@ import { useAuth } from "@/contexts/AuthContext"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 
 interface AuthModalProps {
@@ -14,7 +13,6 @@ interface AuthModalProps {
 }
 
 export default function AuthModal({ isOpen, onClose, defaultMode = "login" }: AuthModalProps) {
-  const navigate = useNavigate()
   const { signIn, signUp } = useAuth()
   const [mode, setMode] = useState<"login" | "register">(defaultMode)
 
@@ -46,10 +44,7 @@ export default function AuthModal({ isOpen, onClose, defaultMode = "login" }: Au
       try {
         await signUp(email, password, name)
         toast.success("Conta criada com sucesso!")
-        setTimeout(() => {
-          onClose()
-          navigate("/profile")
-        }, 1500)
+        onClose()
       } catch (err: any) {
         toast.error(err.message || "Erro ao criar conta. Tente novamente.")
       } finally {
@@ -61,10 +56,7 @@ export default function AuthModal({ isOpen, onClose, defaultMode = "login" }: Au
       try {
         await signIn(email, password)
         toast.success("Login realizado com sucesso!")
-        setTimeout(() => {
-          onClose()
-          navigate("/profile")
-        }, 1500)
+        onClose()
       } catch (err: any) {
         toast.error(err.message || "Erro ao fazer login. Verifique suas credenciais.")
       } finally {

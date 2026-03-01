@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom"
 import { User, Mail, Edit2, Save, X, Camera, LogOut } from "lucide-react"
 import { useAuth } from "@/contexts/AuthContext"
 import { updateUserProfile } from "@/lib/authService"
+import type { Recipe } from "@/lib/recipe"
+import { getRecipesByAuthor, getUserFavoritesCount } from "@/lib/recipeService"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -10,6 +12,8 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import { RecipeCard } from "@/components/RecipeCard"
+import { RecipesSkeleton } from "../skeleton/RecipesSkeleton"
 
 export default function Profile() {
   const navigate = useNavigate()
@@ -17,16 +21,77 @@ export default function Profile() {
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(false)
 
+  const [statsLoading, setStatsLoading] = useState(true)
+  const [createdRecipes, setCreatedRecipes] = useState<Recipe[]>([])
+  const [favoritesCount, setFavoritesCount] = useState(0)
+  const [topRatedRecipe, setTopRatedRecipe] = useState<Recipe | null>(null)
+
   // Estados do formulário
   const [name, setName] = useState("")
   const [bio, setBio] = useState("")
   const [avatar, setAvatar] = useState("")
+
+  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("A imagem deve ter no máximo 2MB")
+      return
+    }
+
+    const reader = new FileReader()
+
+    reader.onloadend = () => {
+      setAvatar(reader.result as string)
+    }
+
+    reader.readAsDataURL(file)
+  }
 
   useEffect(() => {
     if (user) {
       setName(user.name || "")
       setBio(user.bio || "")
       setAvatar(user.avatar || "")
+    }
+  }, [user])
+
+  useEffect(() => {
+    if (!user) return
+    const userId = user.id
+    let mounted = true
+
+    async function fetchStats() {
+      try {
+        setStatsLoading(true)
+        const [recipes, favCount] = await Promise.all([
+          getRecipesByAuthor(userId),
+          getUserFavoritesCount(userId),
+        ])
+
+        if (!mounted) return
+
+        setCreatedRecipes(recipes)
+        setFavoritesCount(favCount)
+
+        const best = recipes.reduce<Recipe | null>((acc, r) => {
+          if (!acc) return r
+          return (r.averageRating ?? 0) > (acc.averageRating ?? 0) ? r : acc
+        }, null)
+
+        setTopRatedRecipe(best)
+      } catch (err) {
+        console.error(err)
+      } finally {
+        if (mounted) setStatsLoading(false)
+      }
+    }
+
+    fetchStats()
+
+    return () => {
+      mounted = false
     }
   }, [user])
 
@@ -109,21 +174,35 @@ export default function Profile() {
             {/* Avatar */}
             <div className="flex items-center gap-6">
               <div className="relative">
-                {avatar || user.avatar ? (
-                 <Avatar className="w-24 h-24 border-2">
-                  <AvatarImage src={avatar || user.avatar} alt={user.name} />
-                 </Avatar>
-                ) : (
-                  <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary">
-                    <User className="h-12 w-12 text-primary" />
-                  </div>
-                )}
+                <label htmlFor="avatarUpload" className={isEditing ? "cursor-pointer" : ""}>
+                  {avatar || user.avatar ? (
+                    <Avatar className="w-24 h-24 border-2">
+                      <AvatarImage src={avatar || user.avatar} alt={user.name} />
+                    </Avatar>
+                  ) : (
+                    <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary">
+                      <User className="h-12 w-12 text-primary" />
+                    </div>
+                  )}
+
+                  {isEditing && (
+                    <div className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center border-2 border-background">
+                      <Camera className="h-4 w-4 text-primary-foreground" />
+                    </div>
+                  )}
+                </label>
+
                 {isEditing && (
-                  <div className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center border-2 border-background">
-                    <Camera className="h-4 w-4 text-primary-foreground" />
-                  </div>
+                  <input
+                    id="avatarUpload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleAvatarUpload}
+                  />
                 )}
               </div>
+
               <div className="flex-1">
                 {isEditing ? (
                   <div className="space-y-2">
@@ -240,17 +319,55 @@ export default function Profile() {
             <div className="space-y-6">
               <div className="p-4 rounded-sm bg-muted/50">
                 <p className="inter text-xs mb-2 text-stone-600 font-semibold">Receitas Criadas</p>
-                <span className="text-2xl font-bold">0</span>
+                <span className="text-2xl font-bold">{statsLoading ? "—" : createdRecipes.length}</span>
               </div>
               <div className="p-4 rounded-sm bg-muted/50">
-                <p className="inter text-xs mb-2 text-stone-600 font-semibold">Avaliações</p>
-                <span className="text-2xl font-bold">0</span>
+                <p className="inter text-xs mb-2 text-stone-600 font-semibold">Receita com a maior avaliação</p>
+                {statsLoading ? (
+                  <span className="text-2xl font-bold">—</span>
+                ) : topRatedRecipe ? (
+                  <div className="space-y-1">
+                    <span className="inter text-sm font-semibold text-stone-900 line-clamp-2">
+                      {topRatedRecipe.title}
+                    </span>
+                    <span className="text-xs text-stone-600">
+                      Nota média: <span className="font-semibold">{topRatedRecipe.averageRating.toFixed(1)}</span>
+                    </span>
+                  </div>
+                ) : (
+                  <span className="text-sm text-stone-600">Você ainda não criou receitas.</span>
+                )}
               </div>
               <div className="p-4 rounded-sm bg-muted/50">
-                <p className="inter text-xs mb-2 text-stone-600 font-semibold">Favoritos</p>
-                <span className="text-2xl font-bold">0</span>
+                <p className="inter text-xs mb-2 text-stone-600 font-semibold">Receitas favoritas</p>
+                <span className="text-2xl font-bold">{statsLoading ? "—" : favoritesCount}</span>
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Minhas receitas */}
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="inter font-medium">Minhas receitas</CardTitle>
+            <CardDescription className="raleway font-medium text-xs">
+              Receitas que você criou na plataforma
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {statsLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <RecipesSkeleton />
+              </div>
+            ) : createdRecipes.length === 0 ? (
+              <p className="text-sm text-stone-600">Você ainda não criou nenhuma receita.</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {createdRecipes.map((r) => (
+                  <RecipeCard key={r.id} recipe={r} showDescription  />
+                ))} 
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

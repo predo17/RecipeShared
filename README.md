@@ -39,7 +39,7 @@ Este projeto foi desenvolvido para aprimorar habilidades em:
 ### Fase 2: CRUD Básico ✅
 - [x] Configurar o Supabase 
 - [x] Criar página de listagem de receitas 
-- [ ] Criar página de detalhes ⏳
+- [x] Criar página de detalhes 
 - [x] Implementar formulário de criação
 - [x] Sistema de roteamento
 
@@ -52,10 +52,9 @@ Este projeto foi desenvolvido para aprimorar habilidades em:
 
 ### Fase 4: Features Avançadas
 - [x] Autenticação de usuários
-- [ ] Timer de preparo
+- [x] Timer de preparo
 - [ ] Conversor de unidades
-- [ ] Lista de compras
-- [ ] Favoritos
+- [x] Favoritos
 - [x] Perfil de usuário
 
 ## 🎯 Funcionalidades Planejadas

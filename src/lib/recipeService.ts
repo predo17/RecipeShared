@@ -283,6 +283,56 @@ export async function removeRecipeFavorite(recipeId: string, userId: string): Pr
   }
 }
 
+export async function getUserFavoritesCount(userId: string): Promise<number> {
+  const { count, error } = await supabase
+    .from("recipe_favorites")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId)
+
+  if (error) throw error
+  return count ?? 0
+}
+
+export async function getUserRatingsCount(userId: string): Promise<number> {
+  const { count, error } = await supabase
+    .from("recipe_ratings")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId)
+
+  if (error) throw error
+  return count ?? 0
+}
+
+export async function getRecipesByAuthor(authorId: string): Promise<Recipe[]> {
+  try {
+    const { data, error } = await supabase
+      .from("recipes")
+      .select(`
+        *,
+        author:users(id, name, email, avatar, bio),
+        ratings:recipe_ratings(
+          id,
+          user_id,
+          user:users(name),
+          rating,
+          comment,
+          created_at
+        ),
+        favorites:recipe_favorites(
+          user_id
+        )
+      `)
+      .eq("author_id", authorId)
+      .order("created_at", { ascending: false })
+
+    if (error) throw error
+    return (data || []).map(transformRecipe)
+  } catch (error) {
+    console.error("Erro ao buscar receitas do autor:", error)
+    throw error
+  }
+}
+
 // Criar nova receita
 export async function createRecipe(recipeData: CreateRecipeData): Promise<Recipe> {
   try {

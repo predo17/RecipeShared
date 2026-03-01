@@ -84,6 +84,7 @@ export default function Favorites() {
               key={r.id}
               recipe={r}
               showDescription
+              onButtonFavorite
               onUnfavorite={handleRemoveFavorite} />
           ))}
         </div>

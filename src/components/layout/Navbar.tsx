@@ -50,7 +50,7 @@ export default function Navbar() {
                 </div>
 
                 {/* Links do menu mobile */}
-                <nav className="space-y-2">
+                <nav className="space-y-2 pr-2">
 
                   {linksNavigate.map((link) => {
 
@@ -61,7 +61,7 @@ export default function Navbar() {
                             key="register"
                             onClick={() => openAuth("register")}
                             aria-label="Criar Conta"
-                            className="flex items-center justify-center gap-2 px-6 py-2.5  bg-linear-to-r from-orange-500 to-orange-400 text-white focus:from-orange-600 focus:to-orange-500 font-semibold rounded-xs shadow-md hover:shadow-lg transition-all duration-300"
+                            className="w-full flex items-center justify-center gap-2 px-6 py-2.5  bg-linear-to-r from-orange-500 to-orange-400 text-white focus:from-orange-600 focus:to-orange-500 font-semibold rounded-xs shadow-md hover:shadow-lg transition-all duration-300"
                           >
                             <span className="text-xs uppercase tracking-wider">
                               Criar Conta
@@ -131,7 +131,7 @@ export default function Navbar() {
                   key={link.href}
                   to={link.href}
                   aria-label={link.name}
-                  className="group flex items-center gap-2 px-4 py-2 hover:bg-stone-100 focus:bg-stone-100 focus:outline-0 transition-all duration-200 relative"
+                  className="group flex items-center gap-2 px-4 py-2 hover:bg-stone-100 focus-visible:bg-stone-100 focus:outline-0 transition-all duration-200 relative"
                 >
                   <link.icon className="h-4 w-4 text-stone-600 group-hover:text-stone-900 group-focus:text-stone-900 transition-colors" />
 

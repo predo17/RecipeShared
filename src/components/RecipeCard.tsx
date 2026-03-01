@@ -11,10 +11,11 @@ import { Button } from "@/components/ui/button"
 type RecipeCardProps = {
     recipe: Recipe
     showDescription?: boolean
+    onButtonFavorite?: boolean
     onUnfavorite?: (recipeId: string) => void
 }
 
-export function RecipeCard({ recipe, showDescription = false, onUnfavorite }: RecipeCardProps) {
+export function RecipeCard({ recipe, showDescription = false, onUnfavorite, onButtonFavorite = false }: RecipeCardProps) {
 
     const { user } = useAuth()
     const [isFavorite, setIsFavorite] = useState<boolean>(Boolean(recipe.isFavorite))
@@ -22,12 +23,12 @@ export function RecipeCard({ recipe, showDescription = false, onUnfavorite }: Re
     const handleToggleFavorite = async (e: any) => {
         e.preventDefault()
         e.stopPropagation()
-        
+
         if (!user) {
             toast.error("Faça login para favoritar receitas.")
             return
         }
-        
+
         try {
             if (isFavorite) {
                 await removeRecipeFavorite(recipe.id, user.id)
@@ -61,18 +62,20 @@ export function RecipeCard({ recipe, showDescription = false, onUnfavorite }: Re
                 </div>
 
                 {/* Favorito */}
-                <div className="absolute top-4 left-4 z-10">
-                    <Button
-                        type="button"
-                        onClick={handleToggleFavorite}
-                        className="flex items-center justify-center w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 transition-colors"
-                        aria-label={isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
-                    >
-                        <Heart
-                            className={`w-5 h-5 ${isFavorite ? "fill-red-500 text-red-500" : "text-white"}`}
-                        />
-                    </Button>
-                </div>
+                {onButtonFavorite && (
+                    <div className="absolute top-4 left-4 z-10">
+                        <Button
+                            type="button"
+                            onClick={handleToggleFavorite}
+                            className="flex items-center justify-center w-9 h-9 rounded-full bg-black/40 hover:bg-black/60 transition-colors"
+                            aria-label={isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+                        >
+                            <Heart
+                                className={`w-5 h-5 ${isFavorite ? "fill-red-500 text-red-500" : "text-white"}`}
+                            />
+                        </Button>
+                    </div>
+                )}
 
                 {/* Tempo */}
                 <div className="absolute top-4 right-4 bg-amber-500/95 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1.5 shadow-lg">
