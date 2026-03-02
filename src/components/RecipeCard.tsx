@@ -10,12 +10,11 @@ import { Button } from "@/components/ui/button"
 
 type RecipeCardProps = {
     recipe: Recipe
-    showDescription?: boolean
     onButtonFavorite?: boolean
     onUnfavorite?: (recipeId: string) => void
 }
 
-export function RecipeCard({ recipe, showDescription = false, onUnfavorite, onButtonFavorite = false }: RecipeCardProps) {
+export function RecipeCard({ recipe, onUnfavorite, onButtonFavorite = false }: RecipeCardProps) {
 
     const { user } = useAuth()
     const [isFavorite, setIsFavorite] = useState<boolean>(Boolean(recipe.isFavorite))
@@ -116,8 +115,8 @@ export function RecipeCard({ recipe, showDescription = false, onUnfavorite, onBu
                         </span>
                     </div>
 
-                    {/* 📝 Descrição (opcional) */}
-                    {showDescription && recipe?.description && (
+                    {/* 📝 Descrição */}
+                    {recipe?.description && (
                         <p className="raleway text-sm text-white/85 line-clamp-2 mb-4">
                             {recipe?.description}
                         </p>

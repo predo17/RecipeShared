@@ -83,7 +83,6 @@ export default function Favorites() {
             <RecipeCard
               key={r.id}
               recipe={r}
-              showDescription
               onButtonFavorite
               onUnfavorite={handleRemoveFavorite} />
           ))}

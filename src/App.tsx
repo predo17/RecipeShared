@@ -11,6 +11,7 @@ import Footer from "@/components/layout/Footer"
 import RecipesPage from "@/pages/RecipesPage"
 import RecipesPageDetails from "@/pages/RecipesPageDetails"
 import AuthModal from "@/components/authComponents/AuthModal"
+import SearchResultsPage from "@/pages/SearchResultsPage"
 import { useUI } from "@/contexts/AuthModalContext"
 
 
@@ -36,6 +37,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/recipes" element={<RecipesPage />} />
         <Route path="/recipes/details/:title" element={<RecipesPageDetails />} />
+        <Route path="/search" element={<SearchResultsPage />} />
         <Route path="/create-recipe" element={<CreateRecipePage />} />
         <Route
           path="/favorites"

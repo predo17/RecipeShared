@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, type FormEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { Search, TrendingUp } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import type { Recipe } from "@/lib/recipe"
 import { getAllRecipes } from "@/lib/recipeService"
 
 export default function SearchHome() {
     const [recipes, setRecipes] = useState<Recipe[]>([])
+    const [searchTerm, setSearchTerm] = useState("")
+    const navigate = useNavigate()
 
     useEffect(() => {
         async function fetchRecipes() {
@@ -27,6 +29,16 @@ export default function SearchHome() {
         new Set(recipes.map(r => r.category).filter(Boolean))
     ).slice(0, 6)
 
+    // Extrair ingredientes únicos (nomes)
+    const uniqueIngredients = Array.from(
+        new Set(
+            recipes
+                .flatMap(r => r.ingredients || [])
+                .map(ing => ing.name)
+                .filter(Boolean)
+        )
+    ).slice(0, 6)
+
     return (
         <section className="container mx-auto px-4 md:px-8 py-16">
             {/* Container principal */}
@@ -36,7 +48,15 @@ export default function SearchHome() {
 
                     {/* Coluna de busca */}
                     <div className="lg:col-span-7 p-8 lg:p-12 border-b lg:border-b-0 lg:border-r border-stone-200">
-                        <form className="space-y-6">
+                        <form
+                            className="space-y-6"
+                            onSubmit={(e: FormEvent) => {
+                                e.preventDefault()
+                                const value = searchTerm.trim()
+                                if (!value) return
+                                navigate(`/search?search=${encodeURIComponent(value)}`)
+                            }}
+                        >
                             {/* Header */}
                             <div className="space-y-3">
                                 <div className="flex items-center gap-3 mb-4">
@@ -64,7 +84,8 @@ export default function SearchHome() {
                                         type="text"
                                         placeholder="Ex: lasanha, bolo de chocolate, pizza margherita..."
                                         className="raleway border-0 bg-transparent h-12 sm:h-14 px-2.5 sm:px-5 text-sm focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-stone-400"
-                                        required
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
                                     />
 
                                     <Button
@@ -82,14 +103,21 @@ export default function SearchHome() {
                                     Sugestões de busca
                                 </p>
                                 <div className="flex flex-wrap gap-2">
-                                    {/* Essa parte irar ser melhorada futuramente */}
-                                    {["Massas", "Sobremesas", "Vegano", "Rápido"].map((tag, index) => (
+                                    {[
+                                        ...uniqueCategories.slice(0, 2),
+                                        ...uniqueIngredients.slice(0, 2),
+                                    ]
+                                    .map((tag, index) => (
                                         <button
                                             key={index}
                                             type="button"
                                             className="text-xs px-3 py-1.5 border border-stone-300 text-stone-600 hover:bg-stone-100 hover:border-stone-400 transition-all duration-200 font-medium rounded-sm"
                                             style={{
                                                 animation: `fadeIn 0.4s ease-out ${index * 0.1}s backwards`
+                                            }}
+                                            onClick={() => {
+                                                setSearchTerm(tag)
+                                                navigate(`/search?search=${encodeURIComponent(tag)}`)
                                             }}
                                         >
                                             {tag}
@@ -125,10 +153,9 @@ export default function SearchHome() {
                             <ul className="flex flex-wrap gap-2">
                                 {uniqueCategories.length > 0 ? (
                                     uniqueCategories.map((category, index) => (
-                                        <li
-                                            key={index}>
+                                        <li key={index}>
                                             <Link
-                                                to={`/recipes/${category}`}
+                                                to={`/search?category=${encodeURIComponent(category)}`}
                                                 className="group flex p-3 bg-white border border-stone-200 hover:border-orange-400 hover:shadow-md focus:shadow-md transition-all duration-300 rounded-sm"
                                             >
                                                 <span className="inter text-sm font-medium text-stone-700 group-hover:text-stone-900 transition-colors">

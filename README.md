@@ -45,31 +45,30 @@ Este projeto foi desenvolvido para aprimorar habilidades em:
 
 ### Fase 3: Features Intermediárias
 - [ ] Sistema de busca
-- [ ] Filtros avançados
-- [ ] Sistema de avaliações
-- [ ] Upload de imagens
-- [ ] Comentários
+- [ ] Filtros avançados ⏳
+- [x] Sistema de avaliações
+- [ ] Upload de imagens ⏳
+- [ ] Comentários ⏳
 
 ### Fase 4: Features Avançadas
 - [x] Autenticação de usuários
 - [x] Timer de preparo
-- [ ] Conversor de unidades
+- [ ] Conversor de unidades ⏳
 - [x] Favoritos
 - [x] Perfil de usuário
 
 ## 🎯 Funcionalidades Planejadas
 
 - ✅ Listar receitas em grid responsivo
-- ⏳ Visualizar detalhes completos da receita
-- ⏳ Criar novas receitas
+- ✅ Visualizar detalhes completos da receita
+- ✅ Criar novas receitas
 - ⏳ Sistema de busca e filtros
-- ⏳ Avaliações com estrelas
+- ✅ Avaliações com estrelas
 - ⏳ Comentários
-- ⏳ Autenticação de usuários
-- ⏳ Timer de cozimento
+- ✅ Autenticação de usuários
+- ✅ Timer de cozimento
 - ⏳ Conversão de medidas
-- ⏳ Lista de compras automática
-- ⏳ Favoritar receitas
+- ✅ Favoritar receitas
 
 ## 📄 Licença
 
