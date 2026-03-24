@@ -1,54 +1,12 @@
-import { useEffect, useMemo, useState } from "react"
 import { useSearchParams } from "react-router-dom"
-import type { Recipe } from "@/lib/recipe"
-import { getAllRecipes } from "@/lib/recipeService"
 import { RecipesSkeleton } from "@/components/skeleton/RecipesSkeleton"
 import { RecipeCard } from "@/components/RecipeCard"
+import { useSearchRecipes } from "@/hooks/useRecipes"
 
 export default function SearchResults() {
-  const [recipes, setRecipes] = useState<Recipe[]>([])
-  const [loading, setLoading] = useState(true)
+  
+  const { recipes: filteredRecipes, loading, allRecipes } = useSearchRecipes()
   const [searchParams] = useSearchParams()
-
-  useEffect(() => {
-    async function fetchRecipes() {
-      try {
-        setLoading(true)
-        const data = await getAllRecipes()
-        setRecipes(data)
-      } catch (err) {
-        console.error("Erro ao carregar receitas", err)
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchRecipes()
-  }, [])
-
-  const filteredRecipes = useMemo(() => {
-    const search = (searchParams.get("search") || "").toLowerCase().trim()
-    const category = (searchParams.get("category") || "").trim()
-
-    return recipes.filter((recipe) => {
-      if (category && recipe.category !== category) {
-        return false
-      }
-
-      if (!search) return true
-
-      const haystack = [
-        recipe.title,
-        recipe.description,
-        recipe.category,
-        ...recipe.ingredients.map((i) => i.name),
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase()
-
-      return haystack.includes(search)
-    })
-  }, [recipes, searchParams])
 
   const rawSearch = searchParams.get("search") || ""
   const rawCategory = searchParams.get("category") || ""
@@ -94,7 +52,7 @@ export default function SearchResults() {
               Receitas que você pode gostar:
             </p>
 
-            {recipes.slice(0, 8).map((r) => (
+            {allRecipes.slice(0, 8).map((r) => (
               <RecipeCard
                 key={r.id}
                 recipe={r}
@@ -109,4 +67,3 @@ export default function SearchResults() {
     </div>
   )
 }
-

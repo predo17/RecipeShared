@@ -28,14 +28,23 @@ export interface UpdateRecipeData {
   steps: Omit<Step, "id">[]
 }
 
+export interface RecipeRating {
+  id: string
+  userId: string
+  rating: number
+  createdAt: string
+}
+
 export interface RecipeComment {
   id: string
+  recipeId: string
   userId: string
   avatar: string | null
   userName: string
   userBio: string | null
   comment: string
-  rating: number
+  parentId?: string | null
+  rating?: number | null
   createdAt: string
 }
 
@@ -52,7 +61,6 @@ export async function getAllRecipes(): Promise<Recipe[]> {
           user_id,
           user:users(name),
           rating,
-          comment,
           created_at
         ),
         ingredients:ingredients(*),
@@ -86,7 +94,6 @@ export async function getRecipeById(id: string): Promise<Recipe | null> {
           user_id,
           user:users(name),
           rating,
-          comment,
           created_at
         ),
         ingredients:ingredients(*),
@@ -120,7 +127,6 @@ export async function getRecipesByCategory(category: string, excludeId?: string,
           user_id,
           user:users(name),
           rating,
-          comment,
           created_at
         ),
         ingredients:ingredients(*),
@@ -148,55 +154,45 @@ export async function getRecipesByCategory(category: string, excludeId?: string,
   }
 }
 
-// Buscar comentários de uma receita (com dados do usuário: avatar, nome, bio)
-export async function getRecipeComments(recipeId: string): Promise<RecipeComment[]> {
+// Buscar avaliações de uma receita (com dados do usuário: avatar, nome, bio)
+export async function getRecipeRatingsByRecipeId(recipeId: string): Promise<RecipeRating[]> {
   const { data, error } = await supabase
     .from("recipe_ratings")
     .select(`
       id,
       user_id,
       rating,
-      comment,
-      created_at,
-      user:users(id, name, avatar, bio)
+      created_at
     `)
     .eq("recipe_id", recipeId)
-    .order("created_at", { ascending: false })
 
   if (error) throw error
 
   return (data || []).map((row: any) => ({
     id: row.id,
     userId: row.user_id,
-    avatar: row.user?.avatar ?? null,
-    userName: row.user?.name ?? "Anônimo",
-    userBio: row.user?.bio ?? null,
-    comment: row.comment ?? "",
     rating: row.rating,
     createdAt: row.created_at,
   }))
 }
 
-// Criar comentário em uma receita
-export async function createRecipeComment(
+// Criar avaliação em uma receita
+export async function createRecipeRating(
   recipeId: string,
   userId: string,
-  comment: string,
-  rating: number
-): Promise<RecipeComment> {
+  rating: number,
+): Promise<RecipeRating> {
   const { data, error } = await supabase
     .from("recipe_ratings")
     .insert({
       recipe_id: recipeId,
       user_id: userId,
-      comment: comment.trim(),
       rating,
     })
     .select(`
       id,
       user_id,
       rating,
-      comment,
       created_at,
       user:users(id, name, avatar, bio)
     `)
@@ -208,14 +204,85 @@ export async function createRecipeComment(
   return {
     id: row.id,
     userId: row.user_id,
-    avatar: row.user?.avatar ?? null,
-    userName: row.user?.name ?? "Anônimo",
-    userBio: row.user?.bio ?? null,
-    comment: row.comment ?? "",
     rating: row.rating,
     createdAt: row.created_at,
   }
 }
+
+// Criar comentário em uma receita
+export async function createRecipeComment(
+  recipeId: string,
+  userId: string,
+  comment: string,
+  parentId?: string | null
+): Promise<RecipeComment> {
+
+  const { data, error } = await supabase
+    .from("recipe_comments")
+    .insert({
+      recipe_id: recipeId,
+      user_id: userId,
+      content: comment,
+      parent_id: parentId ?? null
+    })
+    .select(`
+      id,
+      recipe_id,
+      user_id,
+      content,
+      parent_id,
+      created_at,
+      user:users(id, name, avatar, bio)
+    `)
+    .single()
+
+  if (error) throw error
+
+  const row = data as any
+
+  return {
+    id: row.id,
+    recipeId: row.recipe_id,
+    userId: row.user_id,
+    comment: row.content,
+    parentId: row.parent_id,
+    avatar: row.user?.avatar ?? null,
+    userName: row.user?.name ?? "Anônimo",
+    userBio: row.user?.bio ?? null,
+    createdAt: row.created_at,
+  }
+}
+
+// Buscar comentários de uma receita
+export async function getRecipeCommentsByRecipeId(recipeId: string): Promise<RecipeComment[]> {
+  const { data, error } = await supabase
+    .from("recipe_comments")
+    .select(`
+      id,
+      recipe_id,
+      user_id,
+      content,
+      parent_id,
+      created_at,
+      user:users(id, name, avatar, bio)
+    `)
+    .eq("recipe_id", recipeId)
+    .order("created_at", { ascending: false })
+
+  if (error) throw error
+
+  return (data || []).map((row: any) => ({
+    id: row.id,
+    recipeId: row.recipe_id,
+    userId: row.user_id,
+    comment: row.content,
+    parentId: row.parent_id,
+    avatar: row.user?.avatar ?? null,
+    userName: row.user?.name ?? "Anônimo",
+    userBio: row.user?.bio ?? null,
+    createdAt: row.created_at,
+  }))
+} 
 
 // Buscar receitas favoritas do usuário logado
 export async function getUserFavoriteRecipes(userId: string): Promise<Recipe[]> {
@@ -231,7 +298,6 @@ export async function getUserFavoriteRecipes(userId: string): Promise<Recipe[]> 
             user_id,
             user:users(name),
             rating,
-            comment,
             created_at
           ),
           ingredients:ingredients(*),
@@ -315,7 +381,6 @@ export async function getRecipesByAuthor(authorId: string): Promise<Recipe[]> {
           user_id,
           user:users(name),
           rating,
-          comment,
           created_at
         ),
         favorites:recipe_favorites(
@@ -482,6 +547,12 @@ export async function updateRecipe(
     console.error("Erro ao atualizar receita:", error)
     throw error
   }
+}
+
+/** Remove a receita (ingredientes, passos, avaliações e favoritos somem por CASCADE no banco). */
+export async function deleteRecipe(recipeId: string): Promise<void> {
+  const { error } = await supabase.from("recipes").delete().eq("id", recipeId)
+  if (error) throw error
 }
 
 const RECIPE_IMAGES_BUCKET = "Galeria"

@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { Link } from "react-router-dom"
+import { useState, type FormEvent } from "react"
+import { Link, useNavigate } from "react-router-dom"
 import { ChefHat, Menu, Search, X } from "lucide-react"
 import { useAuth } from "@/contexts/AuthContext"
 import { Button } from "@/components/ui/button"
@@ -17,6 +17,9 @@ export default function Navbar() {
   const { user } = useAuth();
   const [showSearch, setShowSearch] = useState(false);
   const { openAuth } = useUI();
+
+  const [searchTerm, setSearchTerm] = useState("")
+  const navigate = useNavigate()
 
   return (
     <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-stone-200 shadow-sm">
@@ -169,12 +172,25 @@ export default function Navbar() {
           ${showSearch ? "max-h-24 opacity-100" : "max-h-0 opacity-0"}
         `}
       >
-        <form className="px-4 py-4 bg-stone-50">
+        <form className="px-4 py-4 bg-stone-50"
+          onSubmit={(e: FormEvent) => {
+            e.preventDefault()
+            const value = searchTerm.trim()
+            if (!value) return
+            navigate(`/search?search=${encodeURIComponent(value)}`)
+            setSearchTerm("")
+            setShowSearch(false)
+          }}
+
+        >
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400" />
             <Input
+              type="search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar receitas, ingredientes..."
-              className="pl-10 border-stone-300 focus:border-stone-500 focus-visible:ring-stone-300 bg-white h-11"
+              className="pl-10 bg-white h-11"
             />
           </div>
         </form>

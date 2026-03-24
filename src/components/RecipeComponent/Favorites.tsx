@@ -1,43 +1,10 @@
-import { useEffect, useState } from "react"
 import { RecipesSkeleton } from "@/components/skeleton/RecipesSkeleton"
 import { RecipeCard } from "@/components/RecipeCard"
-import type { Recipe } from "@/lib/recipe"
-import { getUserFavoriteRecipes } from "@/lib/recipeService"
-import { useAuth } from "@/contexts/AuthContext"
+import { useFavoriteRecipes } from "@/hooks/useRecipes"
 
 export default function Favorites() {
 
-  const { user } = useAuth()
-  const [recipes, setRecipes] = useState<Recipe[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    if (!user) return
-    const userId = user.id
-    let mounted = true
-
-    async function fetchFavorites() {
-      try {
-        setLoading(true)
-        const data = await getUserFavoriteRecipes(userId)
-        if (mounted) setRecipes(data)
-      } catch (err) {
-        console.error(err)
-      } finally {
-        if (mounted) setLoading(false)
-      }
-    }
-
-    fetchFavorites()
-
-    return () => {
-      mounted = false
-    }
-  }, [user])
-
-  function handleRemoveFavorite(recipeId: string) {
-    setRecipes(prev => prev.filter(r => r.id !== recipeId))
-  }
+  const { recipes, loading, removeFromFavorites } = useFavoriteRecipes()
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -84,7 +51,7 @@ export default function Favorites() {
               key={r.id}
               recipe={r}
               onButtonFavorite
-              onUnfavorite={handleRemoveFavorite} />
+              onUnfavorite={removeFromFavorites} />
           ))}
         </div>
       )}

@@ -21,9 +21,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const currentUser = await getCurrentUser()
       setUser(currentUser)
+      return currentUser
     } catch (error) {
       console.error("Erro ao carregar usuário:", error)
       setUser(null)
+      return null
     } finally {
       setLoading(false)
     }
@@ -52,7 +54,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signIn = async (email: string, password: string) => {
     const { signIn: signInService } = await import("@/lib/authService")
     await signInService(email, password)
-    await loadUser()
+    const currentUser = await loadUser()
+    if (!currentUser) {
+      throw new Error("Conta autenticada, mas o perfil não foi carregado.")
+    }
   }
 
   const signUp = async (email: string, password: string, name: string) => {

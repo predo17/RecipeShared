@@ -35,6 +35,8 @@ export default function RecipeBasicInfo({
     setCategory
 }: Props) {
 
+    const maxCharacters = 500; 
+
     return (
         <Card className="border-stone-200 shadow-md overflow-hidden">
             <CardHeader className="bg-linear-to-r from-stone-50 to-transparent border-b border-stone-200">
@@ -78,9 +80,10 @@ export default function RecipeBasicInfo({
                         placeholder="Conte um pouco sobre sua receita, o que a torna especial..."
                         rows={4}
                         required
-                        className="raleway leading-relaxed font-medium text-sm resize-none"
+                        maxLength={maxCharacters}
+                        className="raleway leading-relaxed font-medium text-sm min-h-20 resize-none"
                     />
-                    <p className="text-xs text-stone-400 text-right">{description.length} caracteres</p>
+                    <p className="text-xs text-stone-500 text-right">{description.length} / {maxCharacters} caracteres</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

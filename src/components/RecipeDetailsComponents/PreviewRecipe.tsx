@@ -1,12 +1,13 @@
 import type { Recipe, Step } from "@/lib/recipe"
 import StepsRecipes from "./StepsRecipes"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ChefHat, Heart } from "lucide-react"
+import { ChefHat, Heart, Pencil } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/contexts/AuthContext"
 import { useState } from "react"
 import { addRecipeFavorite, removeRecipeFavorite } from "@/lib/recipeService"
 import { toast } from "sonner"
+import { useNavigate } from "react-router-dom"
 
 interface Props {
     recipe: Recipe
@@ -16,7 +17,9 @@ interface Props {
 export default function PreviewRecipe({ recipe }: Props) {
 
     const { user } = useAuth()
+    const navigate = useNavigate()
     const [isFavorite, setIsFavorite] = useState<boolean>(Boolean(recipe.isFavorite))
+    const canEdit = Boolean(user?.id && recipe.authorId && user?.id === recipe.authorId)
 
     const handleToggleFavorite = async () => {
         if (!user) {
@@ -151,7 +154,7 @@ export default function PreviewRecipe({ recipe }: Props) {
                                                 <span className="font-semibold text-stone-900">{item.quantity}</span>
                                                 <span className="text-stone-400 mx-1.5">·</span>
                                                 <span className="font-semibold text-stone-900">
-                                                    {item.unit === 'unidade' ? 'de' : item.unit}
+                                                    {item.unit}
                                                 </span>
                                                 <span className="text-stone-400 mx-1.5">·</span>
                                                 <span className="font-light">{item.name}</span>
@@ -218,6 +221,20 @@ export default function PreviewRecipe({ recipe }: Props) {
                                         />
                                         {isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}
                                     </Button>
+
+                                    {canEdit && (
+
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={() => navigate("/create-recipe", { state: { editRecipe: recipe } })}
+                                        >
+                                            <Pencil className="h-4 w-4 mr-2" />
+                                            Editar receita
+                                        </Button>
+
+                                    )}
+
                                 </div>
 
                                 {/* Ornamento decorativo */}

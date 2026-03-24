@@ -81,9 +81,6 @@ export default function RecipeImagePicker({
                                     src={imageUrl}
                                     alt="Preview"
                                     className="w-full h-80 sm:h-105 md:h-125 lg:h-160 max-h-160 object-cover"
-                                    onError={(e) => {
-                                        e.currentTarget.src = "https://via.placeholder.com/400x300?text=Imagem+Inválida"
-                                    }}
                                 />
                             </div>
                         )}
@@ -125,6 +122,7 @@ export default function RecipeImagePicker({
                             if (file) {
                                 onUpload({ target: { files: [file] } } as any)
                             }
+                            
                         }}
 
                         className="
@@ -157,10 +155,6 @@ export default function RecipeImagePicker({
                                 src={imagePreview || imageUrl}
                                 alt="Preview da receita"
                                 className="w-full h-80 sm:h-105 md:h-125 lg:h-160 max-h-160 object-cover rounded"
-                                onError={(e) => {
-                                    e.currentTarget.src =
-                                        "https://via.placeholder.com/400x300?text=Imagem+Inválida"
-                                }}
                             />
                         ) : (
                             <div className="flex flex-col items-center justify-center">

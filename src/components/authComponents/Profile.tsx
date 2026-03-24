@@ -1,140 +1,50 @@
-import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import { User, Mail, Edit2, Save, X, Camera, LogOut } from "lucide-react"
-import { useAuth } from "@/contexts/AuthContext"
-import { updateUserProfile } from "@/lib/authService"
-import type { Recipe } from "@/lib/recipe"
-import { getRecipesByAuthor, getUserFavoritesCount } from "@/lib/recipeService"
+import { User, Mail, Edit2, Save, X, Camera, LogOut, Trash2 } from "lucide-react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { toast } from "sonner"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { RecipeCard } from "@/components/RecipeCard"
 import { RecipesSkeleton } from "../skeleton/RecipesSkeleton"
+import { useProfile } from "@/hooks/useProfilePage"
+import type { Recipe } from "@/lib/recipe"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 
 export default function Profile() {
-  const navigate = useNavigate()
-  const { user, signOut, refreshUser } = useAuth()
-  const [isEditing, setIsEditing] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false)
+  const [recipeToDelete, setRecipeToDelete] = useState<Recipe | null>(null)
 
-  const [statsLoading, setStatsLoading] = useState(true)
-  const [createdRecipes, setCreatedRecipes] = useState<Recipe[]>([])
-  const [favoritesCount, setFavoritesCount] = useState(0)
-  const [topRatedRecipe, setTopRatedRecipe] = useState<Recipe | null>(null)
-
-  // Estados do formulário
-  const [name, setName] = useState("")
-  const [bio, setBio] = useState("")
-  const [avatar, setAvatar] = useState("")
-
-  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error("A imagem deve ter no máximo 2MB")
-      return
-    }
-
-    const reader = new FileReader()
-
-    reader.onloadend = () => {
-      setAvatar(reader.result as string)
-    }
-
-    reader.readAsDataURL(file)
-  }
-
-  useEffect(() => {
-    if (user) {
-      setName(user.name || "")
-      setBio(user.bio || "")
-      setAvatar(user.avatar || "")
-    }
-  }, [user])
-
-  useEffect(() => {
-    if (!user) return
-    const userId = user.id
-    let mounted = true
-
-    async function fetchStats() {
-      try {
-        setStatsLoading(true)
-        const [recipes, favCount] = await Promise.all([
-          getRecipesByAuthor(userId),
-          getUserFavoritesCount(userId),
-        ])
-
-        if (!mounted) return
-
-        setCreatedRecipes(recipes)
-        setFavoritesCount(favCount)
-
-        const best = recipes.reduce<Recipe | null>((acc, r) => {
-          if (!acc) return r
-          return (r.averageRating ?? 0) > (acc.averageRating ?? 0) ? r : acc
-        }, null)
-
-        setTopRatedRecipe(best)
-      } catch (err) {
-        console.error(err)
-      } finally {
-        if (mounted) setStatsLoading(false)
-      }
-    }
-
-    fetchStats()
-
-    return () => {
-      mounted = false
-    }
-  }, [user])
-
-  const handleSave = async () => {
-    if (!user) return
-
-    setLoading(true)
-
-    try {
-      await updateUserProfile(user.id, {
-        name: name.trim(),
-        bio: bio.trim() || undefined,
-        avatar: avatar.trim() || undefined,
-      })
-      await refreshUser()
-      setIsEditing(false)
-      toast.success("Perfil atualizado com sucesso!")
-    } catch (err: any) {
-      toast.error(err.message || "Erro ao atualizar perfil")
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleCancel = () => {
-    if (user) {
-      setName(user.name || "")
-      setBio(user.bio || "")
-      setAvatar(user.avatar || "")
-    }
-    setIsEditing(false)
-  }
-
-  const handleLogout = async () => {
-    try {
-      await signOut()
-      navigate("/")
-    } catch (err) {
-      console.error("Erro ao fazer logout:", err)
-    }
-  }
-
-  if (!user) return null
+  const {
+    user,
+    isEditing,
+    loading,
+    statsLoading,
+    createdRecipes,
+    favoritesCount,
+    topRatedRecipe,
+    name,
+    bio,
+    avatar,
+    setName,
+    setBio,
+    setAvatar,
+    setIsEditing,
+    handleAvatarUpload,
+    handleSave,
+    handleCancel,
+    handleLogout,
+    handleDeleteRecipe,
+    deletingRecipeId,
+  } = useProfile()
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -175,9 +85,9 @@ export default function Profile() {
             <div className="flex items-center gap-6">
               <div className="relative">
                 <label htmlFor="avatarUpload" className={isEditing ? "cursor-pointer" : ""}>
-                  {avatar || user.avatar ? (
+                  {avatar || user?.avatar ? (
                     <Avatar className="w-24 h-24 border-2">
-                      <AvatarImage src={avatar || user.avatar} alt={user.name} />
+                      <AvatarImage src={avatar || user?.avatar} alt={user?.name} />
                     </Avatar>
                   ) : (
                     <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary">
@@ -219,7 +129,7 @@ export default function Profile() {
                   <div>
                     <p className="text-sm text-muted-foreground">Avatar</p>
                     <p className="text-sm">
-                      {avatar || user.avatar
+                      {avatar || user?.avatar
                         ? "Imagem personalizada"
                         : "Avatar padrão"}
                     </p>
@@ -241,7 +151,7 @@ export default function Profile() {
               ) : (
                 <div className="flex items-center gap-2 p-2 rounded-sm border bg-muted/50">
                   <User className="h-4 w-4 text-muted-foreground" />
-                  <span className="inter text-sm">{user.name}</span>
+                  <span className="inter text-sm">{user?.name}</span>
                 </div>
               )}
             </div>
@@ -251,7 +161,7 @@ export default function Profile() {
               <Label htmlFor="email">Email</Label>
               <div className="flex items-center gap-2 p-2 rounded-sm border bg-muted/50">
                 <Mail className="h-4 w-4 text-muted-foreground" />
-                <span className="inter text-sm">{user.email}</span>
+                <span className="inter text-sm">{user?.email}</span>
               </div>
               <p className="raleway text-xs text-muted-foreground">
                 O email não pode ser alterado
@@ -272,7 +182,7 @@ export default function Profile() {
               ) : (
                 <div className="p-3 rounded-sm border bg-muted/50 min-h-15">
                   <p className="text-sm">
-                    {user.bio || "Nenhuma biografia adicionada ainda."}
+                    {user?.bio || "Nenhuma biografia adicionada ainda."}
                   </p>
                 </div>
               )}
@@ -297,7 +207,7 @@ export default function Profile() {
                     <Edit2 className="h-4 w-4 mr-2" />
                     Editar
                   </Button>
-                  <Button variant="outline" onClick={handleLogout}>
+                  <Button variant="outline" onClick={() => setLogoutDialogOpen(true)}>
                     <LogOut className="h-4 w-4 mr-2" />
                     Sair
                   </Button>
@@ -364,13 +274,91 @@ export default function Profile() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {createdRecipes.map((r) => (
-                  <RecipeCard key={r.id} recipe={r} onButtonFavorite />
-                ))} 
+                  <div key={r.id} className="relative">
+                    <RecipeCard recipe={r} onButtonFavorite />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute top-14 left-4 z-20 h-9 w-9 rounded-full shadow-md opacity-90 hover:opacity-100"
+                      disabled={deletingRecipeId === r.id}
+                      aria-label={`Excluir receita ${r.title}`}
+                      onClick={() => setRecipeToDelete(r)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
               </div>
             )}
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Deseja sair da sua conta?</DialogTitle>
+            <DialogDescription>
+              Você será desconectado e voltará para a página inicial.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setLogoutDialogOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={async () => {
+                setLogoutDialogOpen(false)
+                await handleLogout()
+              }}
+            >
+              Confirmar saída
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={Boolean(recipeToDelete)}
+        onOpenChange={(open) => {
+          if (!open) setRecipeToDelete(null)
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Excluir receita</DialogTitle>
+            <DialogDescription>
+              {recipeToDelete
+                ? `Tem certeza que deseja excluir "${recipeToDelete.title}"? Esta ação não pode ser desfeita.`
+                : "Esta ação não pode ser desfeita."}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setRecipeToDelete(null)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              disabled={!recipeToDelete || deletingRecipeId === recipeToDelete.id}
+              onClick={async () => {
+                if (!recipeToDelete) return
+                const selected = recipeToDelete
+                setRecipeToDelete(null)
+                await handleDeleteRecipe(selected)
+              }}
+            >
+              Excluir
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

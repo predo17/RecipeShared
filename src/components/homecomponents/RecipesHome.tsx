@@ -1,33 +1,13 @@
- import { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
-
 import { RecipesSkeleton } from '@/components/skeleton/RecipesSkeleton';
 import { RecipeCard } from '@/components/RecipeCard';
-import type { Recipe } from '@/lib/recipe';
-import { getAllRecipes } from '@/lib/recipeService';
+import { useAllRecipes } from '@/hooks/useRecipes';
 
 export default function RecipesHome() {
-    const [recipes, setRecipes] = useState<Recipe[]>([])
-    const [loading, setLoading] = useState(true)
-
-    useEffect(() => {
-        async function fetchRecipes() {
-            try {
-                setLoading(true)
-                const data = await getAllRecipes()
-                setRecipes(data)
-            } catch (err) {
-                console.error(err)
-            } finally {
-                setLoading(false)
-            }
-        }
-        fetchRecipes()
-    }, [])
-
+    const { recipes, loading } = useAllRecipes()
 
     return (
         <section className="container mx-auto px-4 py-8 md:px-8 ">

@@ -43,10 +43,12 @@ export default function AuthModal({ isOpen, onClose, defaultMode = "login" }: Au
       setLoading(true)
       try {
         await signUp(email, password, name)
-        toast.success("Conta criada com sucesso!")
-        onClose()
+        toast.success("Conta criada com sucesso! Se necessário, confirme no email.")
+        setMode("login")
+        setEmail("")
+        setPassword("")
       } catch (err: any) {
-        toast.error(err.message || "Erro ao criar conta. Tente novamente.")
+        toast.error(err.message && "Erro ao criar conta. Tente novamente mais tarde.")
       } finally {
         setLoading(false)
       }
@@ -56,9 +58,11 @@ export default function AuthModal({ isOpen, onClose, defaultMode = "login" }: Au
       try {
         await signIn(email, password)
         toast.success("Login realizado com sucesso!")
+        setEmail('')
+        setPassword('')
         onClose()
       } catch (err: any) {
-        toast.error(err.message || "Erro ao fazer login. Verifique suas credenciais.")
+        toast.error(err.message && "Erro ao fazer login. Verifique suas credenciais e todas as caixas de e-mail.")
       } finally {
         setLoading(false)
       }
@@ -190,7 +194,7 @@ export default function AuthModal({ isOpen, onClose, defaultMode = "login" }: Au
                   </div>
                   {mode === "register" && (
                     <p className="text-xs text-stone-500 flex items-center gap-2">
-                      <div className="w-1 h-1 rounded-full bg-amber-500"></div>
+                      <div className="w-1 h-1 rounded-full bg-amber-500"/>
                       Mínimo de 6 caracteres
                     </p>
                   )}

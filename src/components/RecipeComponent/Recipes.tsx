@@ -1,55 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
 import { RecipesSkeleton } from "@/components/skeleton/RecipesSkeleton";
 import { RecipeCard } from "@/components/RecipeCard";
-import { getAllRecipes } from "@/lib/recipeService";
-import type { Recipe } from "@/lib/recipe";
-import { useSearchParams } from "react-router-dom";
+import { useAllRecipes } from "@/hooks/useRecipes";
 
 export default function Recipes() {
 
-  const [recipes, setRecipes] = useState<Recipe[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchParams] = useSearchParams()
-
-  useEffect(() => {
-    async function fetchRecipes() {
-      try {
-        setLoading(true)
-        const data = await getAllRecipes()
-        setRecipes(data)
-      } catch (err) {
-        console.error(err)
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchRecipes()
-  }, [])
-
-  const filteredRecipes = useMemo(() => {
-    const search = (searchParams.get("search") || "").toLowerCase().trim()
-    const category = (searchParams.get("category") || "").trim()
-
-    return recipes.filter((recipe) => {
-      if (category && recipe.category !== category) {
-        return false
-      }
-
-      if (!search) return true
-
-      const haystack = [
-        recipe.title,
-        recipe.description,
-        recipe.category,
-        ...recipe.ingredients.map((i) => i.name),
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase()
-
-      return haystack.includes(search)
-    })
-  }, [recipes, searchParams])
+  const { recipes, loading } = useAllRecipes()
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -78,15 +33,9 @@ export default function Recipes() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {loading ? (
-          Array.from({ length: 20 }).map((_, i) => <RecipesSkeleton key={i} />)
-        ) : filteredRecipes.length === 0 ? (
-          <p className="col-span-full text-center text-sm text-stone-600">
-            Nenhuma receita encontrada para os filtros selecionados.
-          </p>
-        ) : (
-          filteredRecipes.map((r) => <RecipeCard key={r.id} recipe={r} onButtonFavorite />)
-        )}
+        {loading
+          ? Array.from({ length: 20 }).map((_, i) => <RecipesSkeleton key={i} />)
+          : recipes.map((r) => <RecipeCard key={r.id} recipe={r} onButtonFavorite />)}
       </div>
     </div>
   )

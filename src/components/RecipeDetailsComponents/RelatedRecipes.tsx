@@ -1,9 +1,7 @@
 
-import { useEffect, useState } from "react"
-import type { Recipe } from "@/lib/recipe"
-import { getRecipesByCategory } from "@/lib/recipeService"
 import { RecipesSkeleton } from "@/components/skeleton/RecipesSkeleton"
 import { RecipeCard } from "@/components/RecipeCard"
+import { useRelatedRecipes } from "@/hooks/useRecipes"
 
 interface Props {
     category: string
@@ -11,28 +9,7 @@ interface Props {
 }
  
 export default function RelatedRecipes({ category, excludeId  }: Props) {
-    const [recipes, setRecipes] = useState<Recipe[]>([])
-    const [loading, setLoading] = useState(true)
-
-    useEffect(() => {
-        if (!category) return
-        let mounted = true
-        async function fetchRelated() {
-            try {
-                setLoading(true)
-                const data = await getRecipesByCategory(category, excludeId, 4)
-                if (mounted) setRecipes(data)
-            } catch (err) {
-                console.error(err)
-            } finally {
-                if (mounted) setLoading(false)
-            }
-        }
-        fetchRelated()
-        return () => {
-            mounted = false
-        }
-    }, [category, excludeId])
+    const { recipes, loading } = useRelatedRecipes(category, excludeId, 4)
 
     return (
         <section className="container mx-auto mt-8">

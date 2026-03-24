@@ -44,16 +44,15 @@ Este projeto foi desenvolvido para aprimorar habilidades em:
 - [x] Sistema de roteamento
 
 ### Fase 3: Features Intermediárias
-- [ ] Sistema de busca
-- [ ] Filtros avançados ⏳
+- [x] Sistema de busca
+- [x] Filtros avançados
 - [x] Sistema de avaliações
-- [ ] Upload de imagens ⏳
-- [ ] Comentários ⏳
+- [x] Upload de imagens 
+- [x] Comentários 
 
 ### Fase 4: Features Avançadas
 - [x] Autenticação de usuários
 - [x] Timer de preparo
-- [ ] Conversor de unidades ⏳
 - [x] Favoritos
 - [x] Perfil de usuário
 
@@ -62,12 +61,11 @@ Este projeto foi desenvolvido para aprimorar habilidades em:
 - ✅ Listar receitas em grid responsivo
 - ✅ Visualizar detalhes completos da receita
 - ✅ Criar novas receitas
-- ⏳ Sistema de busca e filtros
+- ✅ Sistema de busca e filtros
 - ✅ Avaliações com estrelas
-- ⏳ Comentários
+- ✅ Comentários
 - ✅ Autenticação de usuários
 - ✅ Timer de cozimento
-- ⏳ Conversão de medidas
 - ✅ Favoritar receitas
 
 ## 📄 Licença

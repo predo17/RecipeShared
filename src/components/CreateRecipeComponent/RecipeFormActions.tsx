@@ -23,7 +23,7 @@ export default function RecipeFormActions({ loading, isEditMode, onCancel }: Pro
                 <Button
                     type="submit"
                     disabled={loading}
-                    className="bg-linear-to-r from-stone-800 to-stone-700 hover:from-stone-900 hover:to-stone-800 text-white font-semibold px-8 shadow-lg hover:shadow-xl transition-all"
+                    className="bg-linear-to-r from-orange-500 to-orange-400 hover:scale-105 text-white font-semibold px-8 shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                     {loading
                         ? (

@@ -1,43 +1,14 @@
-import { useEffect, useState, type FormEvent } from "react"
+import { useState, type FormEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { Search, TrendingUp } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Link, useNavigate } from "react-router-dom"
-import type { Recipe } from "@/lib/recipe"
-import { getAllRecipes } from "@/lib/recipeService"
+import { useSearchSuggestions } from "@/hooks/useSearchSuggestions"
 
 export default function SearchHome() {
-    const [recipes, setRecipes] = useState<Recipe[]>([])
     const [searchTerm, setSearchTerm] = useState("")
     const navigate = useNavigate()
-
-    useEffect(() => {
-        async function fetchRecipes() {
-            try {
-                const data = await getAllRecipes()
-                setRecipes(data)
-            } catch (err) {
-                console.error("Erro ao carregar receitas", err)
-            }
-        }
-
-        fetchRecipes()
-    }, [])
-
-    // Extrair categorias únicas
-    const uniqueCategories = Array.from(
-        new Set(recipes.map(r => r.category).filter(Boolean))
-    ).slice(0, 6)
-
-    // Extrair ingredientes únicos (nomes)
-    const uniqueIngredients = Array.from(
-        new Set(
-            recipes
-                .flatMap(r => r.ingredients || [])
-                .map(ing => ing.name)
-                .filter(Boolean)
-        )
-    ).slice(0, 6)
+    const { categories, ingredients } = useSearchSuggestions()
 
     return (
         <section className="container mx-auto px-4 md:px-8 py-16">
@@ -103,11 +74,17 @@ export default function SearchHome() {
                                     Sugestões de busca
                                 </p>
                                 <div className="flex flex-wrap gap-2">
-                                    {[
-                                        ...uniqueCategories.slice(0, 2),
-                                        ...uniqueIngredients.slice(0, 2),
-                                    ]
-                                    .map((tag, index) => (
+                                    {(
+                                        [
+                                            ...categories.slice(0, 2),
+                                            ...ingredients.slice(0, 2),
+                                        ].length > 0
+                                            ? [
+                                                ...categories.slice(0, 2),
+                                                ...ingredients.slice(0, 2),
+                                            ]
+                                            : ["Massas", "Sobremesas", "Vegano", "Rápido"]
+                                    ).map((tag, index) => (
                                         <button
                                             key={index}
                                             type="button"
@@ -151,8 +128,8 @@ export default function SearchHome() {
 
                             {/* Lista de categorias */}
                             <ul className="flex flex-wrap gap-2">
-                                {uniqueCategories.length > 0 ? (
-                                    uniqueCategories.map((category, index) => (
+                                {categories.length > 0 ? (
+                                    categories.map((category, index) => (
                                         <li key={index}>
                                             <Link
                                                 to={`/search?category=${encodeURIComponent(category)}`}

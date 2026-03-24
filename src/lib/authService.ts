@@ -1,4 +1,5 @@
 import { supabase } from "./Supabase"
+import type { User } from "@supabase/supabase-js"
 
 export type AuthUser = {
   id: string;
@@ -6,6 +7,33 @@ export type AuthUser = {
   email: string;
   avatar?: string;
   bio?: string;
+}
+
+function buildFallbackUser(authUser: User): AuthUser {
+  return {
+    id: authUser.id,
+    email: authUser.email || "",
+    name:
+      authUser.user_metadata?.name ||
+      authUser.user_metadata?.full_name ||
+      (authUser.email ? authUser.email.split("@")[0] : "Usuário"),
+  }
+}
+
+async function ensureUserProfile(authUser: User, preferredName?: string) {
+  const fallback = buildFallbackUser(authUser)
+  const nameToSave = preferredName?.trim() || fallback.name
+
+  const { error } = await supabase.from("users").upsert(
+    {
+      id: authUser.id,
+      email: fallback.email,
+      name: nameToSave,
+    },
+    { onConflict: "id" }
+  )
+
+  if (error) throw error
 }
 
 // Registrar novo usuário
@@ -25,16 +53,8 @@ export async function signUp(email: string, password: string, name: string) {
     if (authError) throw authError
     if (!authData.user) throw new Error("Erro ao criar usuário")
 
-    // Criar perfil na tabela users
-    const { error: profileError } = await supabase.from("users").insert({
-      id: authData.user.id,
-      email: authData.user.email!,
-      name: name,
-    })
-
-    if (profileError) {
-      console.error("Erro ao criar perfil:", profileError)
-      // Não lançar erro aqui, pois o usuário já foi criado no auth
+    if (authData.session && authData.user) {
+      await ensureUserProfile(authData.user, name)
     }
 
     return { user: authData.user, session: authData.session }
@@ -53,6 +73,9 @@ export async function signIn(email: string, password: string) {
     })
 
     if (error) throw error
+    if (data.user) {
+      await ensureUserProfile(data.user)
+    }
     return { user: data.user, session: data.session }
   } catch (error) {
     console.error("Erro ao fazer login:", error)
@@ -81,20 +104,37 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
     if (!authUser) return null
 
     // Buscar perfil completo na tabela users
-    const { data: profile, error } = await supabase
+    let { data: profile, error } = await supabase
       .from("users")
       .select("*")
       .eq("id", authUser.id)
-      .single()
+      .maybeSingle()
 
     if (error) {
       console.error("Erro ao buscar perfil:", error)
-      // Retornar dados básicos do auth se não houver perfil
-      return {
-        id: authUser.id,
-        email: authUser.email!,
-        name: authUser.user_metadata?.name || "",
+      return buildFallbackUser(authUser)
+    }
+
+    if (!profile) {
+      try {
+        await ensureUserProfile(authUser)
+        const refetch = await supabase
+          .from("users")
+          .select("*")
+          .eq("id", authUser.id)
+          .maybeSingle()
+
+        profile = refetch.data
+        error = refetch.error
+      } catch (profileCreationError) {
+        console.error("Erro ao criar perfil automaticamente:", profileCreationError)
+        return buildFallbackUser(authUser)
       }
+    }
+
+    if (error || !profile) {
+      console.error("Erro ao obter perfil após tentativa de criação:", error)
+      return buildFallbackUser(authUser)
     }
 
     return {
